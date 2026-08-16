@@ -123,11 +123,11 @@ describe('Chessboard', () => {
   // bubbles up to the square's own handler regardless of which element
   // absorbed the initial hit). Removing pointer-events:none from every piece
   // renderer fixed it — confirmed live with a real mouse-event sequence
-  // (page.mouse.down/move/up, not a high-level "drag" helper) against all 5
+  // (page.mouse.down/move/up, not a high-level "drag" helper) against all
   // piece styles. This test pins the fix at the CSS level, one row per style,
   // so a future edit can't silently reintroduce pointer-events:none on any
   // of them.
-  it.each(['classic', 'solid', 'fantasy', 'gothic', 'byzantine'])(
+  it.each(['classic', 'fantasy', 'skulls'])(
     'the %s piece style\'s own rendered root is never pointer-events:none (breaks real-mouse dragging)',
     (pieceStyle) => {
       useAppStore.setState(s => ({ settings: { ...s.settings, pieceStyle } }))

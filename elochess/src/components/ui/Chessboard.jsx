@@ -4,7 +4,6 @@ import { ChessEngine } from '../../core/ChessEngine'
 import { useAppStore } from '../../store/useAppStore'
 import { KNIGHTPATH_THEME } from '../../styles/knightpath'
 import { DEFAULT_PIECE_STYLE_ID } from '../../styles/pieceStyles'
-import { SOLID_PIECE_SHAPES } from '../../styles/solidPieceIcons'
 import { DURATION } from '../../styles/motion'
 
 // "Classic" — the plain Unicode chess glyphs (matching KnightPath's own
@@ -66,51 +65,6 @@ const CLASSIC_PIECES = glyphPieceSet(GLYPHS, isWhite => ({
   textShadow: isWhite ? '0 1px 3px rgba(0,0,0,0.9)' : '0 1px 2px rgba(255,255,255,0.15)',
 }))
 
-// "Solid" — original hand-built flat vector silhouettes (src/styles/
-// solidPieceIcons.js), not font glyphs — replaced the earlier glyph-based
-// version because reusing Unicode's black-piece codepoints for white (just
-// recolored via CSS) still read as "a font character," not a real piece.
-// Each type is one shared shape; white gets a filled+stroked treatment for
-// contrast on light squares, black gets a plain filled silhouette — same
-// per-color distinction real solid piece sets (Merida, Alpha, etc.) use.
-function renderIconShape(shape, key, paintProps) {
-  switch (shape.tag) {
-    case 'circle':
-      return <circle key={key} cx={shape.cx} cy={shape.cy} r={shape.r} {...paintProps} />
-    case 'rect':
-      return <rect key={key} x={shape.x} y={shape.y} width={shape.width} height={shape.height} rx={shape.rx} {...paintProps} />
-    case 'polygon':
-      return <polygon key={key} points={shape.points} {...paintProps} />
-    case 'path':
-      return <path key={key} d={shape.d} {...paintProps} />
-    default:
-      return null
-  }
-}
-const SOLID_PIECES = Object.fromEntries(
-  ['P', 'R', 'N', 'B', 'Q', 'K'].flatMap(type => ['w', 'b'].map(color => {
-    const code = color + type
-    const isWhite = color === 'w'
-    const paintProps = {
-      fill: isWhite ? '#fff' : '#111',
-      stroke: isWhite ? 'rgba(0,0,0,0.9)' : 'none',
-      strokeWidth: isWhite ? 3 : 0,
-      strokeLinejoin: 'round',
-    }
-    return [code, () => (
-      <svg
-        viewBox="0 0 100 100"
-        style={{
-          position: 'absolute', inset: 0, width: '100%', height: '100%',
-          filter: isWhite ? 'drop-shadow(0 1px 2px rgba(0,0,0,0.5))' : 'drop-shadow(0 1px 2px rgba(255,255,255,0.15))',
-        }}
-      >
-        {SOLID_PIECE_SHAPES[type].map((shape, i) => renderIconShape(shape, i, paintProps))}
-      </svg>
-    )]
-  }))
-)
-
 // "Fantasy" piece set by Maurizio Monge (github.com/maurimo/chess-art),
 // MIT licensed — see the About & Licenses section in SettingsPage.jsx.
 // Ornate ivory/ebony-style artwork (crowned king/queen, castle-turret rook,
@@ -138,47 +92,31 @@ const FANTASY_PIECES = Object.fromEntries(
   }))
 )
 
-// "Gothic" and "Byzantine" piece sets — Ryan's own artwork (Chess Info/Chess
-// related images in the vault), each already two-toned (a light and a dark
-// side drawn as distinct art, not one shape recolored via CSS), so unlike
-// Fantasy these are rendered with no PIECE_FILTERS at all. Unlike Fantasy's
-// square (933x933) viewBox, this artwork's viewBox is portrait (100x120 for
-// Gothic, 100x140 for Byzantine) — a plain width/height:100% <img> stretches
-// non-square content to fill the square box (an <img>'s default object-fit
-// is 'fill'), squishing every piece; object-fit: contain alone isn't enough
-// either, since each piece has wildly different internal headroom within
-// that shared viewBox (the Gothic king's crown tip sits ~2px below the
-// viewBox's top edge, the pawn has ~15px of clear space) — contain scales
-// to the full viewBox height, so the king ends up touching the top of the
-// square while the pawn floats with room to spare. Capping the image at 82%
-// of the wrapper on both axes (via a centered flex wrapper) guarantees the
-// same minimum margin for every piece regardless of its own art's padding.
-function staticPieceSet(folder) {
-  return Object.fromEntries(
-    ['P', 'R', 'N', 'B', 'Q', 'K'].flatMap(type => ['w', 'b'].map(color => {
-      const code = color + type
-      return [code, () => (
-        <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <img
-            src={`/pieces/${folder}/${code}.svg`}
-            alt=""
-            draggable={false}
-            style={{ width: '82%', height: '82%', objectFit: 'contain' }}
-          />
-        </div>
-      )]
-    }))
-  )
-}
-const GOTHIC_PIECES = staticPieceSet('gothic')
-const BYZANTINE_PIECES = staticPieceSet('byzantine')
+// "Skulls" piece set, also by Maurizio Monge (github.com/maurimo/chess-art,
+// fancy/skulls/), MIT licensed — same repo/license as Fantasy, credited
+// alongside it in SettingsPage.jsx. Unlike Fantasy's shared ivory/ebony line
+// art recolored per side, each Skulls piece is already its own fully painted
+// artwork for both colors (distinct crown/turban vs. thorned-crown styling,
+// not just a palette swap), so no PIECE_FILTERS recolor pass is needed —
+// just a drop-shadow to match the other sets' sense of depth.
+const SKULLS_PIECES = Object.fromEntries(
+  ['P', 'R', 'N', 'B', 'Q', 'K'].flatMap(type => ['w', 'b'].map(color => {
+    const code = color + type
+    return [code, () => (
+      <img
+        src={`/pieces/skulls/${code}.svg`}
+        alt=""
+        draggable={false}
+        style={{ width: '100%', height: '100%', filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.5))' }}
+      />
+    )]
+  }))
+)
 
 const PIECE_SETS = {
   classic: CLASSIC_PIECES,
-  solid: SOLID_PIECES,
   fantasy: FANTASY_PIECES,
-  gothic: GOTHIC_PIECES,
-  byzantine: BYZANTINE_PIECES,
+  skulls: SKULLS_PIECES,
 }
 
 // Tiny sword marking a legal (non-capture) destination square, in place of a

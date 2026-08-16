@@ -189,8 +189,8 @@ export default function SettingsPage() {
           <div>
             <div className="font-medium text-white mb-1">Chess Pieces</div>
             <p className="text-muted">
-              The Fantasy piece style is the{' '}
-              <a href="https://github.com/maurimo/chess-art" target="_blank" rel="noopener noreferrer" className="text-gold hover:underline">"Fantasy" set</a>{' '}
+              The Fantasy and Skulls piece styles are the{' '}
+              <a href="https://github.com/maurimo/chess-art" target="_blank" rel="noopener noreferrer" className="text-gold hover:underline">"Fantasy" and "Skulls" sets</a>{' '}
               by Maurizio Monge, licensed under the{' '}
               <a href="https://github.com/maurimo/chess-art/blob/main/LICENSE" target="_blank" rel="noopener noreferrer" className="text-gold hover:underline">MIT License</a>.
             </p>

@@ -7,10 +7,8 @@
 
 export const PIECE_STYLES = [
   { id: 'classic', name: 'Classic', description: 'Plain glyphs — KnightPath’s default look.' },
-  { id: 'solid', name: 'Solid', description: 'Flat, filled silhouettes — no outline on white.' },
   { id: 'fantasy', name: 'Fantasy', description: 'Ornate ivory/ebony carved-line artwork.' },
-  { id: 'gothic', name: 'Gothic', description: 'Bold cream-ivory vs. gold-trimmed ebony silhouettes.' },
-  { id: 'byzantine', name: 'Byzantine', description: 'Marble-and-gold Byzantines vs. granite-and-steel Crusaders.' },
+  { id: 'skulls', name: 'Skulls', description: 'Crowned and thorned skull artwork.' },
 ]
 
 export const DEFAULT_PIECE_STYLE_ID = 'classic'
