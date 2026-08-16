@@ -92,8 +92,8 @@ export default function OpeningQuizPage() {
   return (
     <div className="flex h-full overflow-hidden">
       {/* Board */}
-      <div className="flex-1 flex items-center justify-center p-6">
-        <div className="w-full max-w-[400px]">
+      <div className="flex-1 flex items-center justify-center p-2">
+        <div className="w-full max-w-[min(calc(100vh_-_170px),86vw,960px)]">
           {/* Progress bar */}
           <div className="flex items-center gap-3 mb-3">
             <span className="text-sm text-muted shrink-0">{index + 1}/{quiz.length}</span>

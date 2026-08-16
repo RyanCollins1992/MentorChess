@@ -252,8 +252,8 @@ function GameScreen({ playerColor, difficulty, onNewGame }) {
 
   return (
     <div className="flex h-full overflow-hidden">
-      <div className="flex-1 flex items-center justify-center p-4">
-        <div className="w-full transition-[max-width] duration-300" style={{ maxWidth: mode === 'focus' ? 640 : 480, transitionTimingFunction: `cubic-bezier(${EASE_SETTLE.join(',')})` }}>
+      <div className="flex-1 flex items-center justify-center p-2">
+        <div className="w-full transition-[max-width] duration-300" style={{ maxWidth: mode === 'focus' ? 'min(calc(100vh - 190px),84vw,1080px)' : 'min(calc(100vh - 190px),72vw,900px)', transitionTimingFunction: `cubic-bezier(${EASE_SETTLE.join(',')})` }}>
           <div className="flex items-center gap-2 mb-2">
             <div className="w-7 h-7 rounded-full bg-bg3 border border-border flex items-center justify-center text-sm">🤖</div>
             <div className="text-sm font-medium text-white">Coach · {difficulty.label}</div>

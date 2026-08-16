@@ -189,8 +189,8 @@ function EndgameBoard({ scenario }) {
 
   return (
     <div className="flex h-full overflow-hidden">
-      <div className="flex-1 flex items-center justify-center p-6">
-        <div className="w-full max-w-[420px]">
+      <div className="flex-1 flex items-center justify-center p-2">
+        <div className="w-full max-w-[min(calc(100vh_-_150px),90vw,1080px)]">
           <div className={`rounded-xl overflow-hidden transition-all duration-200 ${flash === 'correct' ? 'ring-2 ring-accent2' : flash === 'wrong' ? 'ring-2 ring-danger' : complete ? 'ring-2 ring-gold' : ''}`}>
             <Chessboard position={fen} onPieceDrop={handleDrop}
               boardOrientation={scenario.playerColor === 'b' ? 'black' : 'white'}

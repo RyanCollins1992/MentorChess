@@ -118,8 +118,8 @@ function DrillCard({ trap, index, total, onResult }) {
 
   return (
     <div className="flex h-full overflow-hidden">
-      <div className="flex-1 flex items-center justify-center p-4">
-        <div className="w-full max-w-[440px]">
+      <div className="flex-1 flex items-center justify-center p-2">
+        <div className="w-full max-w-[min(calc(100vh_-_190px),86vw,960px)]">
           <div className="flex items-center justify-between mb-1">
             <span className="font-heading text-xs font-bold text-gold uppercase tracking-wide">Remember Moves</span>
             <span className="text-xs text-muted tabular-nums">{index + 1}/{total}</span>

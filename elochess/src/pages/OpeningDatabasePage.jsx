@@ -115,8 +115,8 @@ function EntryBrowser({ entry }) {
 
   return (
     <div className="flex h-full overflow-hidden">
-      <div className="flex flex-col items-center justify-center p-6 flex-1">
-        <div className="w-full max-w-[440px]">
+      <div className="flex flex-col items-center justify-center p-2 flex-1">
+        <div className="w-full max-w-[min(calc(100vh_-_230px),86vw,940px)]">
           <div className="flex items-center justify-between mb-3">
             <span className="text-xs font-bold px-2 py-1 rounded-lg bg-accent/20 text-accent">
               📚 Opening Database
