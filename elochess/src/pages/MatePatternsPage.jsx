@@ -1,10 +1,12 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
+import { Chess } from 'chess.js'
 import { Chessboard } from '../components/ui/Chessboard'
 import { useChessBoard } from '../hooks/useChessBoard'
 import { useAppStore } from '../store/useAppStore'
 import { PATTERNS } from '../data/matePatterns'
 
 const CATEGORIES = ['All', 'Rook', 'Queen', 'Knight', 'Bishop']
+const PIECE_NAMES = { p: 'Pawn', n: 'Knight', b: 'Bishop', r: 'Rook', q: 'Queen', k: 'King' }
 
 export default function MatePatternsPage() {
   const [selected, setSelected] = useState(null)
@@ -52,6 +54,20 @@ function PatternViewer({ pattern, isLearned, onLearned }) {
   const [flash, setFlash]   = useState(null)
   const showToast = useAppStore(s => s.showToast)
 
+  // The solution is already known upfront (unlike EndgamesPage's open-ended
+  // scenarios), so the hint is just parsed from pattern.solution[0] against a
+  // scratch Chess instance — no engine call needed. Same two-stage reveal and
+  // hint-glow/arrow styling as EndgamesPage's move-hint for a consistent feel.
+  const hintMove = useMemo(() => {
+    if (!pattern.solution?.length) return null
+    try {
+      const mv = new Chess(pattern.fen).move(pattern.solution[0])
+      return mv ? { from: mv.from, to: mv.to, piece: mv.piece } : null
+    } catch { return null }
+  }, [pattern])
+  const [hintStage, setHintStage] = useState(0) // 0 none, 1 piece glow, 2 glow+arrow
+  const handleHint = () => setHintStage(s => Math.min(s + 1, 2))
+
   const handleDrop = ({ sourceSquare: from, targetSquare: to }) => {
     if (pattern.isDemo || solved || pattern.solution.length === 0) return false
     const result = tryMove(from, to)
@@ -68,14 +84,16 @@ function PatternViewer({ pattern, isLearned, onLearned }) {
     return true
   }
 
-  const reset = () => { resetBoard(pattern.fen); setFlash(null) }
+  const reset = () => { resetBoard(pattern.fen); setFlash(null); setHintStage(0) }
 
   return (
     <div className="flex h-full overflow-hidden">
-      <div className="flex-1 flex items-center justify-center p-6">
-        <div className="w-full max-w-[420px]">
+      <div className="flex-1 flex items-center justify-center p-2">
+        <div className="w-full max-w-[min(calc(100vh_-_130px),90vw,1080px)]">
           <div className={`rounded-xl overflow-hidden transition-all duration-200 ${flash === 'correct' || solved ? 'ring-2 ring-accent2' : flash === 'wrong' ? 'ring-2 ring-danger' : ''}`}>
-            <Chessboard position={fen} onPieceDrop={handleDrop} arePiecesDraggable={!pattern.isDemo && !solved} />
+            <Chessboard position={fen} onPieceDrop={handleDrop} arePiecesDraggable={!pattern.isDemo && !solved}
+              customSquareStyles={hintStage >= 1 && hintMove ? { [hintMove.from]: { animation: 'hint-glow 1.2s ease-in-out infinite' } } : undefined}
+              arrows={hintStage >= 2 && hintMove ? [{ startSquare: hintMove.from, endSquare: hintMove.to, color: '#22c55e' }] : []} />
           </div>
           {pattern.isDemo && <div className="mt-2 text-center text-xs text-muted">📖 Study position — no moves required</div>}
         </div>
@@ -86,6 +104,19 @@ function PatternViewer({ pattern, isLearned, onLearned }) {
         {solved || pattern.isDemo
           ? <div className="bg-accent2/10 border border-accent2/30 rounded-xl p-3"><div className="text-xs font-bold text-accent2 mb-1">✅ Explanation</div><p className="text-sm text-muted">{pattern.explanation}</p></div>
           : <div className="bg-gold/10 border border-gold/30 rounded-xl p-3 text-sm text-muted">🎯 Find the checkmate move!</div>}
+        {!pattern.isDemo && !solved && hintMove && (
+          <div className="space-y-2">
+            <button onClick={handleHint} disabled={hintStage >= 2} className="w-full btn-ghost text-sm disabled:opacity-50">
+              {hintStage >= 2 ? '💡 Hint' : hintStage === 1 ? '🎯 Show the square' : '💡 Show the piece'}
+            </button>
+            {hintStage >= 1 && (
+              <div className="bg-gold/10 border border-gold/30 rounded-lg p-3 text-sm text-muted">
+                Move your <span className="text-white font-semibold">{PIECE_NAMES[hintMove.piece]}</span>
+                {hintStage >= 2 && <> to <span className="text-white font-semibold">{hintMove.to}</span></>}
+              </div>
+            )}
+          </div>
+        )}
         <div className="space-y-2 mt-auto">
           {!pattern.isDemo && !solved && <button onClick={reset} className="w-full btn-ghost text-sm">↺ Reset</button>}
           {!isLearned && (pattern.isDemo || solved) && <button onClick={onLearned} className="w-full btn-gold text-sm">✓ Mark as Learned</button>}
