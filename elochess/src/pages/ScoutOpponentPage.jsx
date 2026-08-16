@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useAppStore } from '../store/useAppStore'
 import { useOpeningsStore } from '../store/useOpeningsStore'
 import { fetchRecentGames } from '../core/ChessComImport'
-import { allOpenings, recommendOpenings } from '../core/OpponentScout'
+import { allOpenings, recommendOpenings, spotToPracticeTrap } from '../core/OpponentScout'
 
 const GAMES_SCANNED = 50
 const TOP_N = 3
@@ -52,7 +52,7 @@ export default function ScoutOpponentPage() {
         <div>
           <h2 className="text-xl font-extrabold text-white font-heading">Scout Opponent</h2>
           <p className="text-muted text-sm mt-0.5">
-            Pull a Chess.com player's last {GAMES_SCANNED} games, see their most common openings, and the best one to counter them with
+            Pull a Chess.com player's last {GAMES_SCANNED} games, see their most common openings, practice against the exact lines they play, and find the best one to counter them with
           </p>
         </div>
 
@@ -106,7 +106,7 @@ export default function ScoutOpponentPage() {
               <div className="space-y-2">
                 <div className="text-sm font-bold text-white">Their {result.topOpenings.length === 1 ? 'most common opening' : `${result.topOpenings.length} most common openings`}</div>
                 {result.topOpenings.map((spot, i) => (
-                  <OpeningRow key={i} rank={i + 1} spot={spot} />
+                  <OpeningRow key={i} rank={i + 1} spot={spot} username={result.username} onPractice={practiceTrap} />
                 ))}
               </div>
             )}
@@ -128,14 +128,22 @@ export default function ScoutOpponentPage() {
   )
 }
 
-function OpeningRow({ rank, spot }) {
+function OpeningRow({ rank, spot, username, onPractice }) {
+  const practiceLine = spotToPracticeTrap(spot, username)
   return (
     <div className="flex items-center justify-between gap-3 p-3 bg-bg2 rounded-lg border border-border">
-      <div>
+      <div className="min-w-0">
         <div className="font-bold text-white text-sm">{rank}. {spot.openingName}</div>
         <div className="text-xs text-muted mt-0.5">as {spot.opponentColor} · {spot.games} game{spot.games === 1 ? '' : 's'}</div>
       </div>
-      <div className="text-sm text-muted font-medium shrink-0">{spot.wins}W-{spot.losses}L-{spot.draws}D</div>
+      <div className="flex items-center gap-3 shrink-0">
+        <div className="text-sm text-muted font-medium">{spot.wins}W-{spot.losses}L-{spot.draws}D</div>
+        {practiceLine && (
+          <button onClick={() => onPractice(practiceLine)} className="btn-gold text-xs px-3 py-1.5 shrink-0">
+            Practice
+          </button>
+        )}
+      </div>
     </div>
   )
 }

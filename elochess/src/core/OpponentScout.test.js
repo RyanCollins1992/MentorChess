@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { openingFamily, openingsMatch, findWeakSpots, recommendOpenings, allOpenings } from './OpponentScout'
+import { openingFamily, openingsMatch, findWeakSpots, recommendOpenings, allOpenings, spotToPracticeTrap } from './OpponentScout'
 
 function game({ color, result, opening, sanMoves }) {
   return { color, result, opening, sanMoves }
@@ -229,5 +229,52 @@ describe('allOpenings', () => {
     const spots = allOpenings(games)
     expect(spots[0].openingName).toBe('Big Opening')
     expect(spots[1].openingName).toBe('Rare Opening')
+  })
+
+  it('retains a sample game per bucket, the most recent one seen', () => {
+    // fetchRecentGames returns newest-first, so the FIRST game encountered
+    // for a bucket is the one that should stick as sampleGame.
+    const newest = game({ color: 'Black', result: 'Win', opening: 'Italian Game', sanMoves: ['e4', 'e5', 'newest'] })
+    const older  = game({ color: 'Black', result: 'Loss', opening: 'Italian Game', sanMoves: ['e4', 'e5', 'older'] })
+    const spots = allOpenings([newest, older])
+    expect(spots[0].sampleGame).toBe(newest)
+  })
+})
+
+describe('spotToPracticeTrap', () => {
+  const spot = (overrides) => ({
+    openingName: 'Italian Game', opponentColor: 'black', wins: 1, losses: 3, draws: 0,
+    sampleGame: { sanMoves: ['e4', 'e5', 'Nf3', 'Nc6', 'Bc4', 'Bc5', 'O-O', 'Nf6'] },
+    ...overrides,
+  })
+
+  it('builds a trap-shaped practice line for the color opposite the opponent', () => {
+    const trap = spotToPracticeTrap(spot(), 'hikaru')
+    expect(trap.color).toBe('white') // opponent played black, so the user practices white
+    expect(trap.opening).toBe('Italian Game')
+    expect(trap.moves).toEqual(['e4', 'e5', 'Nf3', 'Nc6', 'Bc4', 'Bc5', 'O-O', 'Nf6'])
+    expect(trap.name).toContain('hikaru')
+  })
+
+  it('keeps the full game, not just an opening-length prefix', () => {
+    const fullGame = Array.from({ length: 60 }, (_, i) => `m${i}`)
+    const longGame = spot({ sampleGame: { sanMoves: fullGame } })
+    const trap = spotToPracticeTrap(longGame, 'hikaru')
+    expect(trap.moves).toEqual(fullGame)
+  })
+
+  it('returns null when the bucket has no sample game', () => {
+    expect(spotToPracticeTrap(spot({ sampleGame: null }), 'hikaru')).toBeNull()
+  })
+
+  it('returns null when the sample game has no recorded moves (legacy/fixture shape)', () => {
+    expect(spotToPracticeTrap(spot({ sampleGame: { sanMoves: undefined } }), 'hikaru')).toBeNull()
+    expect(spotToPracticeTrap(spot({ sampleGame: { sanMoves: [] } }), 'hikaru')).toBeNull()
+  })
+
+  it('gives the same opponent/color/opening the same id, so repeated scouts reuse SRS/progress state', () => {
+    const a = spotToPracticeTrap(spot(), 'hikaru')
+    const b = spotToPracticeTrap(spot({ sampleGame: { sanMoves: ['d4', 'd5'] } }), 'hikaru')
+    expect(a.id).toBe(b.id)
   })
 })

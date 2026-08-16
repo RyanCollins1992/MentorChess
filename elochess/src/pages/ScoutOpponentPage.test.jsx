@@ -123,6 +123,41 @@ describe('ScoutOpponentPage', () => {
     expect(screen.getByText('Not enough repeated games in one opening yet to find a genuine weak spot.')).toBeInTheDocument()
   })
 
+  it('a top opening with a sample game shows a Practice button that drills the opponent\'s actual moves', async () => {
+    // Identical moves for all 3 games, so however the real ECO-backed
+    // identifyOpening() names this exact line, they land in one bucket —
+    // the test doesn't need to predict/hardcode that name.
+    const ITALIAN_LINE = ['e4', 'e5', 'Nf3', 'Nc6', 'Bc4', 'Bc5']
+    const games = [
+      { color: 'Black', result: 'Loss', opening: 'Italian Game', sanMoves: ITALIAN_LINE },
+      { color: 'Black', result: 'Loss', opening: 'Italian Game', sanMoves: ITALIAN_LINE },
+      { color: 'Black', result: 'Loss', opening: 'Italian Game', sanMoves: ITALIAN_LINE },
+    ]
+    vi.spyOn(ChessComImport, 'fetchRecentGames').mockResolvedValue(games)
+    render(<ScoutOpponentPage />)
+    fireEvent.change(screen.getByLabelText("Their Chess.com username"), { target: { value: 'weakling' } })
+    fireEvent.click(screen.getByText('Scout'))
+
+    await screen.findByText('3 games analyzed · weakling', { exact: false })
+    fireEvent.click(screen.getByText('Practice'))
+
+    expect(useAppStore.getState().currentPage).toBe('openings')
+    expect(useOpeningsStore.getState().drillMode).toBe(true)
+    expect(useOpeningsStore.getState().activeColor).toBe('white') // opponent played black
+    expect(useOpeningsStore.getState().selectedTrap?.moves).toEqual(ITALIAN_LINE)
+  })
+
+  it('a top opening with no recorded moves (legacy fixture shape) shows no Practice button', async () => {
+    const games = [lossGame('Italian Game'), lossGame('Italian Game'), lossGame('Italian Game')]
+    vi.spyOn(ChessComImport, 'fetchRecentGames').mockResolvedValue(games)
+    render(<ScoutOpponentPage />)
+    fireEvent.change(screen.getByLabelText("Their Chess.com username"), { target: { value: 'weakling' } })
+    fireEvent.click(screen.getByText('Scout'))
+
+    await screen.findByText('1. Italian Game')
+    expect(screen.queryByText('Practice')).not.toBeInTheDocument()
+  })
+
   it('lists openings with a winning record too, not just losing ones', async () => {
     const games = [
       { color: 'White', result: 'Win', opening: 'Queens Gambit' },

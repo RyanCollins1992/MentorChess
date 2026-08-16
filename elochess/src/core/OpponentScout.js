@@ -65,7 +65,9 @@ function resolveOpeningName(g) {
 
 // Groups games by (color the opponent played, opening family). Every family
 // with at least one game gets a bucket — filtering/sorting for a particular
-// use (worst record vs. most-played) is left to the caller.
+// use (worst record vs. most-played) is left to the caller. Also retains one
+// real game per bucket (`sampleGame`) so a bucket can be turned into an
+// actual practiceable line, not just a name/count — see spotToPracticeTrap.
 function bucketOpenings(games) {
   const buckets = new Map()
 
@@ -76,16 +78,45 @@ function bucketOpenings(games) {
     const key = `${opponentColor}|${family.toLowerCase()}`
 
     if (!buckets.has(key)) {
-      buckets.set(key, { openingName: family, opponentColor, games: 0, wins: 0, losses: 0, draws: 0 })
+      buckets.set(key, { openingName: family, opponentColor, games: 0, wins: 0, losses: 0, draws: 0, sampleGame: null })
     }
     const b = buckets.get(key)
     b.games++
     if (g.result === 'Win') b.wins++
     else if (g.result === 'Loss') b.losses++
     else b.draws++
+    // fetchRecentGames returns newest-first, so the first game seen for a
+    // given bucket is already the most recent one — the freshest signal of
+    // what this opponent currently plays in this opening.
+    if (!b.sampleGame) b.sampleGame = g
   }
 
   return [...buckets.values()].map(b => ({ ...b, lossRate: b.losses / b.games }))
+}
+
+// Turns an opening bucket into a TRAPS-shaped object, so it can be dropped
+// straight into the existing trap-drill UI (OpeningsPage.jsx's TrapStudy) —
+// practicing against what this specific opponent has actually played,
+// rather than a curated/idealized line. The user plays the opposite color
+// from the opponent; the opponent's own historical replies are auto-played
+// exactly as they happened in that real game, for the full length of the
+// game (not truncated to an opening-only prefix) — Ryan wants the whole
+// thing drillable, not just the first several moves. Returns null when
+// there's no sample game or it has no recorded moves (fixture/legacy game
+// shapes, or a game that ended with no PGN parsed).
+export function spotToPracticeTrap(spot, opponentUsername) {
+  const moves = spot.sampleGame?.sanMoves
+  if (!moves?.length) return null
+  const forColor = spot.opponentColor === 'black' ? 'white' : 'black'
+
+  return {
+    id: `scout-${opponentUsername.toLowerCase()}-${spot.opponentColor}-${spot.openingName.toLowerCase().replace(/\s+/g, '-')}`,
+    name: `${opponentUsername}'s ${spot.openingName}`,
+    opening: spot.openingName,
+    color: forColor,
+    moves,
+    description: `From ${opponentUsername}'s actual games as ${spot.opponentColor} (${spot.wins}W-${spot.losses}L-${spot.draws}D in this opening). Practice the exact line they play.`,
+  }
 }
 
 // Buckets with at least MIN_SAMPLE games, worst loss-rate first.
