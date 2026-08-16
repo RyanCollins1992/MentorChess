@@ -100,5 +100,17 @@ export class ReviewEngine {
     this._stopTimer = setTimeout(() => this._worker.postMessage('stop'), STOP_AFTER_MS)
   }
 
+  // Drops any not-yet-dispatched queued positions, resolving each with a
+  // harmless placeholder instead of leaving them pending forever — used when
+  // GameReviewPage abandons an in-flight analysis run (a new game was loaded
+  // mid-analysis) so the new run's evaluate() calls aren't stuck waiting
+  // behind a whole stale game's worth of queued positions. The one position
+  // already in flight with the worker (if any) is left to finish naturally;
+  // it's bounded by STOP_AFTER_MS either way.
+  cancelQueued() {
+    const pending = this._queue.splice(0)
+    pending.forEach(({ resolve }) => resolve({ eval: 0, bestMove: null, eval2: null, secondMove: null }))
+  }
+
   terminate() { this._worker?.terminate() }
 }

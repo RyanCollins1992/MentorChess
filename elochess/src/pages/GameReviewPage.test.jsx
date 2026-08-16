@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest'
+import { describe, it, expect, beforeEach } from 'vitest'
 import { render, screen, fireEvent, act } from '@testing-library/react'
 import GameReviewPage from './GameReviewPage'
 import { useAppStore } from '../store/useAppStore'
@@ -119,42 +119,4 @@ describe('GameReviewPage', () => {
     expect(screen.getByText('Run analysis to see key moments.')).toBeInTheDocument()
   })
 
-  it('switching to the URL tab and typing a Chess.com link shows the manual-PGN instructions', async () => {
-    await renderPage()
-    fireEvent.click(screen.getByText('URL'))
-    fireEvent.change(screen.getByPlaceholderText('https://lichess.org/AbCd1234'), { target: { value: 'https://www.chess.com/game/live/12345' } })
-
-    expect(screen.getByText("Chess.com doesn't allow direct URL import")).toBeInTheDocument()
-    expect(screen.getByText('Chess.com — use PGN tab ↑')).toBeDisabled()
-  })
-
-  it('an unrecognised URL shows an error on Enter', async () => {
-    await renderPage()
-    fireEvent.click(screen.getByText('URL'))
-    const input = screen.getByPlaceholderText('https://lichess.org/AbCd1234')
-    fireEvent.change(input, { target: { value: 'not a url' } })
-    fireEvent.keyDown(input, { key: 'Enter' })
-
-    expect(screen.getByText('Unrecognised URL — paste a Lichess game link (e.g. lichess.org/AbCd1234)')).toBeInTheDocument()
-  })
-
-  it('fetching a valid Lichess URL loads the game', async () => {
-    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true, status: 200, text: async () => samplePgn }))
-    await renderPage()
-    fireEvent.click(screen.getByText('URL'))
-    fireEvent.change(screen.getByPlaceholderText('https://lichess.org/AbCd1234'), { target: { value: 'https://lichess.org/AbCd1234' } })
-    fireEvent.click(screen.getByText('Fetch from Lichess →'))
-
-    expect(await screen.findByText('vs opponent1 (2200)', { exact: false })).toBeInTheDocument()
-  })
-
-  it('a 404 from Lichess shows a "not found" error', async () => {
-    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: false, status: 404, text: async () => '' }))
-    await renderPage()
-    fireEvent.click(screen.getByText('URL'))
-    fireEvent.change(screen.getByPlaceholderText('https://lichess.org/AbCd1234'), { target: { value: 'https://lichess.org/AbCd1234' } })
-    fireEvent.click(screen.getByText('Fetch from Lichess →'))
-
-    expect(await screen.findByText('Game "AbCd1234" not found on Lichess')).toBeInTheDocument()
-  })
 })

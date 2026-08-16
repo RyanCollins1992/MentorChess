@@ -3,7 +3,6 @@ import { Chessboard } from '../components/ui/Chessboard'
 import { EvalBar } from '../components/ui/EvalBar'
 import { Chess } from 'chess.js'
 import { useAppStore } from '../store/useAppStore'
-import { readThemeColor } from '../core/themeColor'
 import { ReviewEngine } from '../core/ReviewEngine'
 import {
   CLASSIFICATIONS,
@@ -46,11 +45,22 @@ export default function GameReviewPage() {
   // `game` would make the first render's `game !== prevGame` check false,
   // silently skipping the PGN parse forever.
   const [prevGame, setPrevGame] = useState(null)
+  // Bumped every time the loaded game changes (including "Load New" back to
+  // null) so an analyseGame() run started against the *previous* game can
+  // tell it's been superseded and discard its results instead of writing a
+  // stale/mismatched analysis array over the new game's moves — the actual
+  // cause of "the eval bar doesn't change" / "stuck on loading": loading a
+  // new game while a previous analysis was still running left `analyzing`
+  // stuck true and, once it did resolve, applied the old game's eval numbers
+  // to the new game's move list.
+  const runIdRef = useRef(0)
 
   // Parse PGN into move list on load, adjusted during render rather than in
   // an effect (react-hooks/set-state-in-effect) since `game` is external store state.
   if (game !== prevGame) {
     setPrevGame(game)
+    setAnalyzing(false)
+    setProgress(0)
     if (game?.pgn) {
       setMoves(parsePGN(game.pgn))
       setCurrentIdx(0)
@@ -58,6 +68,14 @@ export default function GameReviewPage() {
       setActiveTab('analysis')
     }
   }
+
+  // Ref mutations can't happen during render (react-hooks/refs) — this
+  // effect is the actual invalidation point for runIdRef/cancelQueued, kept
+  // in sync with the render-time reset above via the same `game` dependency.
+  useEffect(() => {
+    runIdRef.current++
+    engineRef.current?.forEach(e => e.cancelQueued())
+  }, [game])
 
   // Init a pool of Stockfish workers
   useEffect(() => {
@@ -79,6 +97,7 @@ export default function GameReviewPage() {
   const analyseGame = async () => {
     const engines = (engineRef.current || []).filter(e => e._ready)
     if (!sfReady || moves.length === 0 || engines.length === 0) return
+    const myRunId = runIdRef.current
     setAnalyzing(true)
     setProgress(0)
     const DEPTH = 20
@@ -94,10 +113,15 @@ export default function GameReviewPage() {
         const fen = i === 0 ? START_FEN : moves[i-1].fenAfter
         rawResults[i] = await engine.evaluate(fen, DEPTH)
         completed++
-        setProgress(Math.round((completed / totalPositions) * 100))
+        // A newer game may have been loaded (and cancelQueued() called)
+        // while this position was already in flight — don't let a stray
+        // late completion move the progress bar for whatever game/run is
+        // current now.
+        if (runIdRef.current === myRunId) setProgress(Math.round((completed / totalPositions) * 100))
       }
     }
     await Promise.all(engines.map(runWorker))
+    if (runIdRef.current !== myRunId) return // superseded — discard, don't touch state
 
     const results = []
     let prevEval = 0
@@ -171,11 +195,14 @@ export default function GameReviewPage() {
 
   const currentAnalysis = analysis[currentIdx - 1] || null
 
-  // Reads the active theme's own gold token rather than a hardcoded hex, so
-  // the arrow retints with everything else.
-  const goldVar = readThemeColor('--color-gold', '#f5b731')
+  // Uses the same sage-green as the BEST/GREAT classification badges rather
+  // than the theme's gold token — gold sits in the same warm brown/tan family
+  // as the board squares (#F0D9B5/#B58863), so at any opacity it nearly
+  // vanishes against the dark squares. The classification green is already
+  // "best move" in this app's own visual language and reads clearly against
+  // both square colors.
   const bestMoveArrow = currentAnalysis?.bestMove
-    ? [{ startSquare: currentAnalysis.bestMove.slice(0, 2), endSquare: currentAnalysis.bestMove.slice(2, 4), color: `${goldVar}99` }]
+    ? [{ startSquare: currentAnalysis.bestMove.slice(0, 2), endSquare: currentAnalysis.bestMove.slice(2, 4), color: `${CLASSIFICATIONS.BEST.color}CC` }]
     : []
 
   const betterSan = currentAnalysis && currentAnalysis.betterMove &&
@@ -188,13 +215,13 @@ export default function GameReviewPage() {
   return (
     <div className="flex h-full overflow-hidden">
       {/* Board */}
-      <div className="flex-1 flex flex-col items-center justify-center p-4 gap-3">
+      <div className="flex-1 flex flex-col items-center justify-center p-2 gap-2">
         {/* Eval bar */}
-        <div className="w-full max-w-[480px]">
+        <div className="w-full max-w-[min(calc(100vh_-_200px),86vw,940px)]">
           <EvalBar eval={currentAnalysis?.eval || 0} />
         </div>
 
-        <div className="w-full max-w-[480px]">
+        <div className="w-full max-w-[min(calc(100vh_-_200px),86vw,940px)]">
           <Chessboard
             position={currentFen}
             arePiecesDraggable={false}
@@ -410,19 +437,25 @@ function AnalysisSummary({ analysis, color }) {
           </span>
         </div>
       )}
-      {ORDER.filter(k => counts[k]).map(k => {
+      {/* Every tier is listed, best to worst, not just the ones this game
+          hit — so the list doubles as a legend for the FL/SH/RL/... symbols
+          shown on each move in the Analysis tab, not just a results tally.
+          Tiers with a 0 count are dimmed rather than hidden, keeping the
+          full scale visible as a reference. */}
+      {ORDER.map(k => {
         const cls = CLASSIFICATIONS[k]
-        return <QualityRow key={k} color={cls.color} label={cls.label} count={counts[k]} />
+        return <QualityRow key={k} color={cls.color} symbol={cls.symbol} label={cls.label} count={counts[k] || 0} />
       })}
     </div>
   )
 }
 
-function QualityRow({ color, label, count }) {
+function QualityRow({ color, symbol, label, count }) {
+  const achieved = count > 0
   return (
-    <div className="flex items-center justify-between text-[13px] py-1.5 border-b border-border last:border-none">
+    <div className="flex items-center justify-between text-[13px] py-1.5 border-b border-border last:border-none" style={{ opacity: achieved ? 1 : 0.4 }}>
       <span className="flex items-center gap-2 text-muted">
-        <span className="w-2 h-2 rounded-full shrink-0" style={{ background: color }} />
+        <span className="w-5 text-[10px] font-bold text-center shrink-0" style={{ color }}>{symbol}</span>
         {label}
       </span>
       <span className="text-white font-mono tabular-nums">{count}</span>
@@ -469,38 +502,24 @@ function TabPlaceholder({ text }) {
 }
 
 // ── Import panel (shown when no game is loaded) ───────────────────
-
-const IMPORT_TABS = [
-  { id: 'pgn', label: 'PGN' },
-  { id: 'url', label: 'URL' },
-]
+//
+// URL import (Lichess fetch + a Chess.com "doesn't allow direct URL import"
+// help panel) was removed — Chess.com's Published-Data API has no way to
+// look up a single game by URL/ID (only by username+month), so pasting a
+// Chess.com link could never actually work, which was confusing next to the
+// Lichess link that did. PGN paste covers every source (Chess.com, Lichess,
+// or any database) uniformly, so it's the only import path now.
 
 function ImportPanel({ onGameLoaded }) {
-  const [tab, setTab] = useState('pgn')
   return (
     <div className="flex items-start justify-center p-6 h-full overflow-y-auto">
       <div className="w-full max-w-lg space-y-5 pt-6">
         <div>
           <div className="text-4xl mb-3 opacity-20">♜</div>
           <h2 className="text-xl font-extrabold text-white font-heading">Load a Game</h2>
-          <p className="text-sm text-muted mt-1">Paste PGN, or fetch a game from a Lichess link</p>
+          <p className="text-sm text-muted mt-1">Paste a PGN to review</p>
         </div>
-        <div className="flex gap-2">
-          {IMPORT_TABS.map(t => (
-            <button key={t.id} onClick={() => setTab(t.id)}
-              className={`text-xs px-3 py-1.5 rounded-lg border transition-colors ${
-                tab === t.id
-                  ? 'border-gold text-gold bg-gold/10'
-                  : 'border-border text-muted hover:text-white'
-              }`}
-            >
-              {t.label}
-            </button>
-          ))}
-        </div>
-        {tab === 'pgn'
-          ? <PgnImport onLoad={onGameLoaded} />
-          : <UrlImport onLoad={onGameLoaded} />}
+        <PgnImport onLoad={onGameLoaded} />
       </div>
     </div>
   )
@@ -561,85 +580,4 @@ function PgnImport({ onLoad }) {
   )
 }
 
-function UrlImport({ onLoad }) {
-  const [url, setUrl]         = useState('')
-  const [myColor, setMyColor] = useState('White')
-  const [loading, setLoading] = useState(false)
-  const [error, setError]     = useState('')
-  const showToast = useAppStore(s => s.showToast)
-
-  const trimmed    = url.trim()
-  const isChesscom = trimmed.includes('chess.com')
-  // Lichess game URLs: lichess.org/{8-char-id}  or  lichess.org/{id}/white etc.
-  const lichessId  = trimmed.match(/lichess\.org\/([a-zA-Z0-9]{6,12})(?:[/#?]|$)/)?.[1] ?? null
-
-  const handleFetch = async () => {
-    if (!trimmed) { setError('Paste a game URL'); return }
-    if (isChesscom) return  // button is disabled, but guard anyway
-    if (!lichessId) { setError('Unrecognised URL — paste a Lichess game link (e.g. lichess.org/AbCd1234)'); return }
-
-    setLoading(true); setError('')
-    try {
-      // No Accept header — Lichess returns PGN by default; custom headers trigger CORS preflight
-      const res = await fetch(
-        `https://lichess.org/game/export/${lichessId}?clocks=false&evals=false&literate=false`
-      )
-      if (res.status === 404) throw new Error(`Game "${lichessId}" not found on Lichess`)
-      if (!res.ok) throw new Error(`Lichess error ${res.status} — try again in a moment`)
-
-      const pgn = await res.text()
-      if (!pgn || pgn.trim().length < 5) throw new Error('Empty response from Lichess — is the game public?')
-
-      const game = parsePgnToGame(pgn, myColor)
-      onLoad(game)
-      showToast('✅ Game loaded', 'success')
-    } catch (e) {
-      setError(e.message)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  return (
-    <div className="space-y-3">
-      <input
-        value={url}
-        onChange={e => { setUrl(e.target.value); setError('') }}
-        onKeyDown={e => e.key === 'Enter' && !isChesscom && handleFetch()}
-        placeholder="https://lichess.org/AbCd1234"
-        className="w-full bg-bg3 border border-border rounded-xl px-3 py-2.5 text-sm text-white placeholder-muted/50 outline-none focus:border-gold/50"
-      />
-      <ColorPicker value={myColor} onChange={setMyColor} />
-      {error && <div className="text-danger text-sm">{error}</div>}
-
-      {/* Chess.com help — shown as soon as a chess.com link is typed */}
-      {isChesscom && (
-        <div className="bg-bg3 border border-gold/30 rounded-xl p-3 space-y-1.5 text-xs text-muted">
-          <div className="font-bold text-white text-sm">Chess.com doesn't allow direct URL import</div>
-          <div className="mt-1 space-y-1">
-            <div>1. Open the game on Chess.com</div>
-            <div>2. Click the <span className="text-white font-semibold">⚙ gear icon</span> below the board</div>
-            <div>3. Click <span className="text-white font-semibold">Download PGN</span></div>
-            <div>4. Open the file, copy all the text</div>
-            <div>5. Switch to the <span className="text-gold font-bold">PGN tab</span> and paste it there</div>
-          </div>
-        </div>
-      )}
-
-      {!isChesscom && !trimmed && (
-        <p className="text-xs text-muted">Supports Lichess game links only. For Chess.com, paste the PGN instead.</p>
-      )}
-
-      <button
-        onClick={handleFetch}
-        disabled={loading || isChesscom || (!lichessId && !!trimmed)}
-        className="btn-gold w-full disabled:opacity-50"
-      >
-        {loading   ? 'Fetching…'
-         : isChesscom ? 'Chess.com — use PGN tab ↑'
-         : 'Fetch from Lichess →'}
-      </button>
-    </div>
-  )
-}
 

@@ -49,4 +49,26 @@ describe('ReviewEngine', () => {
     worker.onmessage({ data: 'bestmove e7e5' })
     expect((await result).eval).toBeLessThan(-9000)
   })
+
+  // Regression test for the "eval bar doesn't change / analysis stuck
+  // loading" bug: GameReviewPage.jsx calls cancelQueued() on every engine
+  // when a new game is loaded mid-analysis, so a previous game's queued (not
+  // yet dispatched) positions don't sit ahead of the new game's evaluate()
+  // calls in each engine's FIFO queue.
+  it('cancelQueued resolves not-yet-dispatched positions with a placeholder, without touching the one already in flight', async () => {
+    const { engine, worker } = await initEngine()
+    const inFlight = engine.evaluate('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1', 20)
+    const queued   = engine.evaluate('rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 2', 20)
+
+    // Only the first position's fen/go should have been posted so far.
+    expect(worker.posted.filter(m => m.startsWith('position fen')).length).toBe(1)
+
+    engine.cancelQueued()
+    await expect(queued).resolves.toEqual({ eval: 0, bestMove: null, eval2: null, secondMove: null })
+
+    // The in-flight evaluate() is untouched — still pending until its own bestmove arrives.
+    worker.onmessage({ data: 'info depth 20 multipv 1 score cp 15 pv e2e4' })
+    worker.onmessage({ data: 'bestmove e2e4' })
+    expect((await inFlight).eval).toBe(15)
+  })
 })
