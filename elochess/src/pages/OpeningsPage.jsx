@@ -19,10 +19,11 @@ export default function OpeningsPage() {
   const [selectedLine, setSelectedLine] = useState(null)
   const [prevActiveColor, setPrevActiveColor] = useState(activeColor)
   const [prevSelectedTrap, setPrevSelectedTrap] = useState(selectedTrap)
-  // Collapsed by default: click "Openings"/"Traps" to reveal the level
-  // headers, then click a level to reveal its lines. Each toggle is
-  // independent so any combination can be expanded/minimized at once.
-  const [expandedSections, setExpandedSections] = useState({ openings: false, traps: false })
+  // "Openings"/"Traps" sections start open so the 3 level headers are
+  // visible immediately; each level still needs its own click to reveal
+  // lines. Each toggle is independent so any combination can be
+  // expanded/minimized at once.
+  const [expandedSections, setExpandedSections] = useState({ openings: true, traps: true })
   const [expandedLevels, setExpandedLevels] = useState({})
   const toggleSection = (key) => setExpandedSections(s => ({ ...s, [key]: !s[key] }))
   const toggleLevel = (key) => setExpandedLevels(s => ({ ...s, [key]: !s[key] }))
@@ -414,8 +415,8 @@ function TrapStudy({ trap, showToast }) {
   return (
     <div className="flex h-full overflow-hidden">
       {/* Board area */}
-      <div className="flex flex-col items-center justify-center p-6 flex-1">
-        <div className="w-full max-w-[440px]">
+      <div className="flex flex-col items-center justify-center p-2 flex-1">
+        <div className="w-full max-w-[min(calc(100vh_-_260px),86vw,940px)]">
 
           {/* Mode toggle */}
           <div className="flex items-center justify-between mb-3">
@@ -682,8 +683,8 @@ function RepertoireStudy({ line, group, showToast }) {
 
   return (
     <div className="flex h-full overflow-hidden">
-      <div className="flex flex-col items-center justify-center p-6 flex-1">
-        <div className="w-full max-w-[440px]">
+      <div className="flex flex-col items-center justify-center p-2 flex-1">
+        <div className="w-full max-w-[min(calc(100vh_-_260px),86vw,940px)]">
           {mode === 'browse' && (
             <>
               <div className="flex items-center justify-between mb-3">

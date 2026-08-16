@@ -9,6 +9,14 @@ import { TRAPS } from '../data/traps'
 
 const click = (container, id) => fireEvent.click(container.querySelector(`[data-square="${id}"]`))
 
+// The sidebar is a two-level accordion (section -> level -> line/trap) —
+// "Openings"/"Traps" sections are open by default, but each level
+// ("beginner"/"intermediate"/"advanced") still needs its own click to reveal
+// its lines. The same level label can appear twice at once (once under
+// Openings, once under Traps, for whichever color/search is active), so this
+// clicks every match rather than a single ambiguous getByText.
+const expandLevel = (level) => screen.getAllByText(level).forEach(el => fireEvent.click(el))
+
 // Fried Liver Attack (color: 'white') — the "hero" side is White, so only
 // White's own plies (even indices) ever need dragging; Black's replies
 // auto-play via the component's own 500ms timeout. Clicking Black's squares
@@ -33,6 +41,7 @@ describe('OpeningsPage', () => {
 
   it('defaults to the White tab showing both openings and traps', () => {
     render(<OpeningsPage />)
+    expandLevel('beginner') // both sample items below are beginner-level
     expect(screen.getByText('Italian Game: Giuoco Piano')).toBeInTheDocument()
     expect(screen.getByText('Fried Liver Attack')).toBeInTheDocument()
     expect(screen.getByText('Select a trap to study')).toBeInTheDocument()
@@ -48,6 +57,7 @@ describe('OpeningsPage', () => {
   it('switching to the Mates tab shows only the Traps section', () => {
     render(<OpeningsPage />)
     fireEvent.click(screen.getByText('Mates'))
+    expandLevel('beginner')
     expect(screen.getByText("Scholar's Mate")).toBeInTheDocument()
     expect(screen.queryByText('Openings')).not.toBeInTheDocument()
   })
@@ -55,6 +65,7 @@ describe('OpeningsPage', () => {
   it('search narrows both the openings and traps lists', () => {
     render(<OpeningsPage />)
     fireEvent.change(screen.getByPlaceholderText('Search traps, openings…'), { target: { value: 'fried liver' } })
+    expandLevel('beginner')
     expect(screen.getByText('Fried Liver Attack')).toBeInTheDocument()
     expect(screen.queryByText('Italian Game: Giuoco Piano')).not.toBeInTheDocument()
   })
@@ -67,6 +78,7 @@ describe('OpeningsPage', () => {
 
   it('selecting a repertoire line starts at the beginning of the line, not the fully-played-out end', () => {
     render(<OpeningsPage />)
+    expandLevel('beginner')
     fireEvent.click(screen.getByText('Italian Game: Giuoco Piano'))
     expect(screen.getByText('📖 Opening Theory')).toBeInTheDocument()
     expect(screen.getByText('Start')).toBeInTheDocument()
@@ -75,6 +87,7 @@ describe('OpeningsPage', () => {
 
   it('Next in the repertoire browser steps forward one ply from the start', () => {
     render(<OpeningsPage />)
+    expandLevel('beginner')
     fireEvent.click(screen.getByText('Italian Game: Giuoco Piano'))
     fireEvent.click(screen.getByText('Next ▶'))
     expect(screen.getByText('Move 1 of 8')).toBeInTheDocument()
@@ -82,6 +95,7 @@ describe('OpeningsPage', () => {
 
   it('shows pros and cons for the selected repertoire line', () => {
     render(<OpeningsPage />)
+    expandLevel('beginner')
     fireEvent.click(screen.getByText('Italian Game: Giuoco Piano'))
     expect(screen.getByText('Natural, easy development')).toBeInTheDocument()
     expect(screen.getByText('Less forcing than sharper Italian tries')).toBeInTheDocument()
@@ -89,6 +103,7 @@ describe('OpeningsPage', () => {
 
   it('selecting a trap shows Drill mode with the trap name and key concept', () => {
     render(<OpeningsPage />)
+    expandLevel('beginner')
     fireEvent.click(screen.getByText('Fried Liver Attack'))
     expect(screen.getByText('🎯 Drill Mode')).toBeInTheDocument()
     expect(screen.getByText('Nxf7!! sacrifice — aggressive knight sacrifice for a devastating attack')).toBeInTheDocument()
@@ -96,6 +111,7 @@ describe('OpeningsPage', () => {
 
   it('selecting a trap after a line clears the repertoire view', () => {
     render(<OpeningsPage />)
+    expandLevel('beginner')
     fireEvent.click(screen.getByText('Italian Game: Giuoco Piano'))
     fireEvent.click(screen.getByText('Fried Liver Attack'))
     expect(screen.queryByText('📖 Opening Theory')).not.toBeInTheDocument()
@@ -104,6 +120,7 @@ describe('OpeningsPage', () => {
 
   it('a wrong move flashes an error and does not advance', async () => {
     const { container } = render(<OpeningsPage />)
+    expandLevel('beginner')
     fireEvent.click(screen.getByText('Fried Liver Attack'))
 
     // e2-e3 is legal but not the trap's scripted first move (e4).
@@ -127,6 +144,7 @@ describe('OpeningsPage', () => {
 
     it('playing the correct line completes the drill and auto-enrolls in SRS', () => {
       const { container } = render(<OpeningsPage />)
+      expandLevel('beginner')
       fireEvent.click(screen.getByText('Fried Liver Attack'))
 
       const whiteMoves = solveFriedLiverWhiteMoves()
@@ -145,6 +163,7 @@ describe('OpeningsPage', () => {
 
     it('Switch to Browse resets the board to the start of the line, not wherever the drill left off', () => {
       const { container } = render(<OpeningsPage />)
+      expandLevel('beginner')
       fireEvent.click(screen.getByText('Fried Liver Attack'))
 
       click(container, 'e2') // e4, the trap's actual first move
@@ -159,6 +178,7 @@ describe('OpeningsPage', () => {
 
   it('Restart resets a partially-played drill', () => {
     const { container } = render(<OpeningsPage />)
+    expandLevel('beginner')
     fireEvent.click(screen.getByText('Fried Liver Attack'))
 
     click(container, 'e2')
@@ -170,6 +190,7 @@ describe('OpeningsPage', () => {
 
   it('manually toggling Spaced Review enrolls and unenrolls without completing the drill', () => {
     render(<OpeningsPage />)
+    expandLevel('beginner')
     fireEvent.click(screen.getByText('Fried Liver Attack'))
 
     fireEvent.click(screen.getByText('+ Add to Spaced Review'))
@@ -188,6 +209,7 @@ describe('OpeningsPage', () => {
     const PLY_COUNT = 15
 
     function openLineAndStartPractice() {
+      expandLevel('beginner')
       fireEvent.click(screen.getByText(LINE_NAME))
       for (let i = 0; i < PLY_COUNT; i++) fireEvent.click(screen.getByText('Next ▶'))
       fireEvent.click(screen.getByText('Try it yourself →'))
@@ -195,6 +217,7 @@ describe('OpeningsPage', () => {
 
     it('reaching the end of Next shows the "try it yourself" prompt, not before', () => {
       render(<OpeningsPage />)
+      expandLevel('beginner')
       fireEvent.click(screen.getByText(LINE_NAME))
       expect(screen.queryByText('Now your turn — try this out.')).not.toBeInTheDocument()
 
@@ -380,6 +403,7 @@ describe('OpeningsPage', () => {
       it('a black-repertoire line auto-plays White\'s opening move before the user does anything', () => {
         const { container } = render(<OpeningsPage />)
         fireEvent.click(screen.getByText('Black'))
+        expandLevel('beginner')
         fireEvent.click(screen.getByText('Philidor Defence'))
         for (let i = 0; i < 16; i++) fireEvent.click(screen.getByText('Next ▶'))
         fireEvent.click(screen.getByText('Try it yourself →'))
