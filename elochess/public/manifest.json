@@ -9,7 +9,7 @@
   "icons": [
     {
       "src": "/mentorchess-icon.png",
-      "sizes": "300x295",
+      "sizes": "512x512",
       "type": "image/png"
     }
   ]
