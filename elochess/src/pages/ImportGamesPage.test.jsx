@@ -103,7 +103,7 @@ describe('ImportGamesPage', () => {
     expect(rows[1]).toContain('zebra')
   })
 
-  it('clicking Review sets the review game and navigates to Game Review', async () => {
+  it('clicking Review sets the review game and navigates to Game Breakdown', async () => {
     fetch.mockResolvedValueOnce({ ok: true, status: 200, json: async () => ({ games: [sampleGame()] }) })
     render(<ImportGamesPage />)
     fireEvent.change(screen.getByLabelText('Chess.com username'), { target: { value: 'hikaru' } })

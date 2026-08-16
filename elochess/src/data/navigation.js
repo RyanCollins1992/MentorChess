@@ -10,15 +10,21 @@
  * no shared thread. Spaced Review leads its section (not buried under
  * "Progress") because it's a time-sensitive due-queue, not a passive stat.
  *
- * Re-ordered 2026-07-17: "OPENING TRAPS" renamed to "OPENINGS" (the section
- * covers the whole opening-study workflow — quizzes, favourites, difficulty
- * rating — not just trap lines, so the old name was misleading). PLAY moved
- * up ahead of TACTICS & ENDGAMES per Ryan's request. Story, top to bottom:
- * learn the openings, apply it in a game, drill tactics/endgames, review
- * your own games, track progress over time.
+ * Re-ordered 2026-08-09 per Ryan's request: PLAY and PROGRESS both moved up
+ * ahead of OPENINGS/TACTICS & ENDGAMES/MY GAMES, so the core "jump into a
+ * game" and "check how I'm doing" actions sit right under Dashboard instead
+ * of behind the deeper opening-study sections.
  */
 export const NAV = [
   { id: 'dashboard',     label: 'Dashboard',      icon: '◫', },
+
+  { section: 'PLAY' },
+  { id: 'vs-coach',      label: 'vs. Coach',      icon: '⚔', },
+  { id: 'free-play',     label: 'Free Play',      icon: '♞', },
+
+  { section: 'PROGRESS' },
+  { id: 'progress',      label: 'My Progress',    icon: '✦', },
+  { id: 'elo-roadmap',   label: 'ELO Roadmap',   icon: '⚑', },
 
   { section: 'OPENINGS' },
   { id: 'spaced-review', label: 'Spaced Review',  icon: '↻', badge: true },
@@ -27,10 +33,6 @@ export const NAV = [
   { id: 'opening-quiz',  label: 'Opening Quiz',   icon: '✒', },
   { id: 'favourites',    label: 'Favourites',     icon: '✧', },
   { id: 'rate-difficulty',label:'Rate Difficulty', icon: '◆', },
-
-  { section: 'PLAY' },
-  { id: 'vs-coach',      label: 'vs. Coach',      icon: '⚔', },
-  { id: 'free-play',     label: 'Free Play',      icon: '♞', },
 
   { section: 'TACTICS & ENDGAMES' },
   { id: 'puzzles',       label: 'Puzzles',        icon: '✥', },
@@ -42,9 +44,5 @@ export const NAV = [
   { section: 'MY GAMES' },
   { id: 'import-games',   label: 'Import Games',   icon: '✉', },
   { id: 'scout-opponent', label: 'Scout Opponent', icon: '◎', },
-  { id: 'game-review',    label: 'Game Review',    icon: '♜', },
-
-  { section: 'PROGRESS' },
-  { id: 'progress',      label: 'My Progress',    icon: '✦', },
-  { id: 'elo-roadmap',   label: 'ELO Roadmap',   icon: '⚑', },
+  { id: 'game-review',    label: 'Game Breakdown', icon: '♜', },
 ]

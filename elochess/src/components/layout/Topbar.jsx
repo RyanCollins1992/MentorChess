@@ -10,7 +10,7 @@ const PAGE_TITLES = {
   'progress':       'My Progress',
   'import-games':   'Import Games',
   'scout-opponent': 'Scout Opponent',
-  'game-review':    'Game Review',
+  'game-review':    'Game Breakdown',
   'elo-roadmap':    'ELO Roadmap',
   'favourites':     'Favourites',
   'vs-coach':       'vs. Coach',

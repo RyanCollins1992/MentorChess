@@ -6,18 +6,24 @@ import { ChessEngine } from './ChessEngine'
 // mate-score encoding), Lichess accuracy math, and PGN parsing.
 
 // ── Move classification thresholds (centipawns) ───────────────────
-// Based on Lichess/Chess.com classification standards
+// Delta bands are the standard Lichess/Chess.com centipawn-loss tiers, but
+// the label/symbol/color set is MentorChess's own (plain-English word tiers,
+// 2-letter abbreviations, a gold→sage→amber→oxblood palette drawn from the
+// KnightPath theme) — deliberately not Chess.com's Brilliant/Great/Best
+// wording, !!/!/✓/?!/?/??/✗ glyphs, or teal/blue/lime/orange/red colors,
+// which their Published-Data API terms name explicitly as protected
+// "move classification glyphs."
 export const CLASSIFICATIONS = {
-  BRILLIANT:   { label: 'Brilliant',  symbol: '!!', color: '#1baca6', minDelta: null,  maxDelta: null  }, // special
-  GREAT:       { label: 'Great',      symbol: '!',  color: '#5c8bb0', minDelta: null,  maxDelta: null  }, // special
-  BEST:        { label: 'Best',       symbol: '✓',  color: '#5c8bb0', minDelta: -10,   maxDelta: 0     },
-  EXCELLENT:   { label: 'Excellent',  symbol: '✓',  color: '#96bc4b', minDelta: -25,   maxDelta: -10   },
-  GOOD:        { label: 'Good',       symbol: '✓',  color: '#96bc4b', minDelta: -50,   maxDelta: -25   },
-  INACCURACY:  { label: 'Inaccuracy', symbol: '?!', color: '#f0c15b', minDelta: -100,  maxDelta: -50   },
-  MISTAKE:     { label: 'Mistake',    symbol: '?',  color: '#e87b1e', minDelta: -200,  maxDelta: -100  },
-  BLUNDER:     { label: 'Blunder',    symbol: '??', color: '#ca3431', minDelta: -Infinity, maxDelta: -200 },
-  BOOK:        { label: 'Book',       symbol: '📖', color: '#a88764', minDelta: null,  maxDelta: null  }, // opening
-  MISS:        { label: 'Miss',       symbol: '✗',  color: '#e87b1e', minDelta: null,  maxDelta: null  }, // missed forced win
+  BRILLIANT:   { label: 'Flawless',              symbol: 'FL', color: '#C9A227', minDelta: null,  maxDelta: null  }, // special
+  GREAT:       { label: 'Sharp',                 symbol: 'SH', color: '#4F8F6D', minDelta: null,  maxDelta: null  }, // special
+  BEST:        { label: 'Reliable',              symbol: 'RL', color: '#4F8F6D', minDelta: -10,   maxDelta: 0     },
+  EXCELLENT:   { label: 'Accurate',               symbol: 'AC', color: '#8CBB93', minDelta: -25,   maxDelta: -10   },
+  GOOD:        { label: 'Reasonable',            symbol: 'RS', color: '#8CBB93', minDelta: -50,   maxDelta: -25   },
+  INACCURACY:  { label: 'Wobbly',                symbol: 'WB', color: '#E0A548', minDelta: -100,  maxDelta: -50   },
+  MISTAKE:     { label: 'Off',                   symbol: 'OF', color: '#A8623A', minDelta: -200,  maxDelta: -100  },
+  BLUNDER:     { label: 'Costly',                symbol: 'CS', color: '#8E3B39', minDelta: -Infinity, maxDelta: -200 },
+  BOOK:        { label: 'Familiar (book move)',  symbol: 'BK', color: '#8A8176', minDelta: null,  maxDelta: null  }, // opening
+  MISS:        { label: 'Overlooked',            symbol: 'OV', color: '#A8623A', minDelta: null,  maxDelta: null  }, // missed forced win
 }
 
 export function classifyMove(prevEval, newEval, isWhite) {
