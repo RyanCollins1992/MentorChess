@@ -62,7 +62,7 @@ describe('AICoachPanel', () => {
 
   it('does not send an empty/whitespace-only message', () => {
     render(<AICoachPanel open onClose={() => {}} onOpen={() => {}} />)
-    const sendButton = screen.getByRole('button', { name: '' }) // the send icon button has no accessible text
+    const sendButton = screen.getByRole('button', { name: 'Send message' })
     expect(sendButton).toBeDisabled()
   })
 

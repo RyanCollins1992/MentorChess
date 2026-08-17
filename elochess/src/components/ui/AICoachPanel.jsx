@@ -161,6 +161,7 @@ export default function AICoachPanel({ open, onClose, onOpen }) {
             <button
               onClick={() => send()}
               disabled={!input.trim() || thinking}
+              aria-label="Send message"
               className="self-end text-bg bg-gold rounded-lg p-1.5 disabled:opacity-40 hover:bg-gold2 transition-colors active:scale-95"
             >
               <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">

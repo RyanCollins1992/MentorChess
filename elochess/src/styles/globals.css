@@ -56,12 +56,12 @@
     --color-gold: #8C6A28;
     --color-gold2: #6E5220;
     --color-accent: #8C6A28;
-    --color-accent2: #B08D42;
-    --color-muted: #8A8176;
+    --color-accent2: #8C692D;
+    --color-muted: #696055;
     --color-dim: #C5BFB2;
     --color-text: #1C1A15;
     --color-white: #1C1A15;
-    --color-danger: #DC2626;
+    --color-danger: #C81E1E;
     /* RGB-triplet companions of the hex vars above, so Tailwind's opacity
        modifiers (bg-gold/10 etc.) have something alpha-blendable before
        AppLayout's effect runs — see AppLayout.jsx's hexToRgbTriplet comment
@@ -73,12 +73,12 @@
     --color-gold-rgb: 140 106 40;
     --color-gold2-rgb: 110 82 32;
     --color-accent-rgb: 140 106 40;
-    --color-accent2-rgb: 176 141 66;
-    --color-muted-rgb: 138 129 118;
+    --color-accent2-rgb: 140 105 45;
+    --color-muted-rgb: 105 96 85;
     --color-dim-rgb: 197 191 178;
     --color-text-rgb: 28 26 21;
     --color-white-rgb: 28 26 21;
-    --color-danger-rgb: 220 38 38;
+    --color-danger-rgb: 200 30 30;
     --font-heading: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     /* A small, uniform ~4px radius on every card/button (measured via

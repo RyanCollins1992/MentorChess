@@ -56,10 +56,22 @@ export const KNIGHTPATH_THEME = {
     border: '#DFD6C0',
     // 10% — accent: deepened gold (see file header for the contrast math).
     gold: '#8C6A28', gold2: '#6E5220',
-    accent: '#8C6A28', accent2: '#B08D42',
-    muted: '#8A8176', dim: '#C5BFB2',
+    // accent2 darkened from #B08D42 to #8C692D (2026-08-17, Lighthouse a11y
+    // audit) — the original hit only 2.97:1 as small bold text (e.g. the
+    // "beginner" difficulty badge); #8C692D clears 4.79:1.
+    accent: '#8C6A28', accent2: '#8C692D',
+    // Darkened from the original #8A8176 (2026-08-17, Lighthouse a11y audit)
+    // — that value only hit 3.08:1 against bg3 and 3.83:1 against bg2/white,
+    // both under the 4.5:1 AA minimum for the small text `muted` is used for
+    // everywhere (sidebar labels, filter tabs, hints). #696055 clears both
+    // (4.96:1 and 6.17:1) while staying the same warm-grey family.
+    muted: '#696055', dim: '#C5BFB2',
     text: '#1C1A15', white: '#1C1A15',
-    danger: '#DC2626',
+    // Darkened from #DC2626 to #C81E1E (2026-08-17, Lighthouse a11y audit)
+    // — the original hit only 4.47:1 as small bold text (e.g. the
+    // "advanced" difficulty badge), just under the 4.5:1 minimum;
+    // #C81E1E clears 5.31:1.
+    danger: '#C81E1E',
   },
   chartColors: ['#8C6A28', '#1C6B9A', '#B58863', '#D97706', '#7C3AED'],
   board: { light: '#F0D9B5', dark: '#B58863' },

@@ -51,7 +51,7 @@ export default function Topbar({ onCoachClick, onPaletteClick }) {
       <div className="flex items-center gap-2 shrink-0">
         {/* ELO badge */}
         <div className="flex items-center gap-1.5 bg-bg3 border border-border rounded-lg px-3 py-1.5">
-          <span className="text-gold font-extrabold text-sm">{progress.currentElo}</span>
+          <span className="text-gold2 font-extrabold text-sm">{progress.currentElo}</span>
           <span className="text-muted text-xs font-medium">ELO</span>
         </div>
 
