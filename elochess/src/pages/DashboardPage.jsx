@@ -29,6 +29,16 @@ export default function DashboardPage() {
   const dueCount = useAppStore(s => s.dueCount)
   const solvedPuzzles = useAppStore(s => s.solvedPuzzles)
   const navigate = useAppStore(s => s.navigate)
+  const showToast = useAppStore(s => s.showToast)
+
+  // mailto: silently no-ops if there's no desktop mail client configured
+  // (common — many people only use webmail), so also copy the address as a
+  // fallback that always works. Doesn't preventDefault, so a real mail
+  // client still opens too.
+  const copyFeedbackEmail = () => {
+    navigator.clipboard.writeText('MentorChessHelp@gmail.com')
+    showToast('Email copied to clipboard', 'success', 1500)
+  }
 
   const eloHistory = progressManager.eloHistory
   const srsStats = useMemo(() => srsEngine.getStats(), [])
@@ -156,7 +166,7 @@ export default function DashboardPage() {
       <div className="flex items-center justify-center gap-1.5 text-xs text-muted pt-2">
         <Mail size={12} />
         <span>Have a suggestion?</span>
-        <a href="mailto:MentorChessHelp@gmail.com?subject=MentorChess%20feedback" className="text-gold hover:underline">Send feedback</a>
+        <a href="mailto:MentorChessHelp@gmail.com?subject=MentorChess%20feedback" onClick={copyFeedbackEmail} className="text-gold hover:underline">Send feedback</a>
       </div>
     </div>
   )

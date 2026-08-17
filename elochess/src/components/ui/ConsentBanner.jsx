@@ -22,8 +22,12 @@ export default function ConsentBanner() {
         MentorChess would like to use Google Analytics to understand how the app is used (visits, active users). No account or personal data — see our{' '}
         <a href="/privacy.html" target="_blank" rel="noopener noreferrer" className="text-gold hover:underline">Privacy Policy</a>.
       </p>
+      {/* Equal size/weight/contrast on both buttons, matching order — UK
+          ICO PECR guidance treats a muted "Reject" next to a prominent
+          "Accept" as non-compliant nudging, even though both were already
+          functionally equivalent no-ops here. */}
       <div className="flex gap-2 shrink-0">
-        <button onClick={() => decide(false)} className="btn-ghost text-sm px-4">Reject</button>
+        <button onClick={() => decide(false)} className="bg-text text-bg font-bold px-4 py-2 rounded-lg hover:opacity-90 transition-all active:scale-95 cursor-pointer select-none text-sm">Reject</button>
         <button onClick={() => decide(true)} className="btn-gold text-sm px-4">Accept</button>
       </div>
     </div>

@@ -1,4 +1,5 @@
 import { useState, useRef } from 'react'
+import { Copy } from 'lucide-react'
 import { useAppStore } from '../store/useAppStore'
 import { progressManager } from '../core/ProgressManager'
 import { srsEngine } from '../core/SpacedRepetitionEngine'
@@ -29,6 +30,14 @@ export default function SettingsPage() {
     localStorage.clear()
     showToast('All data cleared — refreshing…', 'info')
     setTimeout(() => window.location.reload(), 1500)
+  }
+
+  // Fallback for anyone without a desktop mail client configured (the
+  // mailto: link above silently does nothing in that case) — copies the
+  // plain address so it can be pasted into Gmail, etc.
+  const copyEmail = () => {
+    navigator.clipboard.writeText('MentorChessHelp@gmail.com')
+    showToast('Email copied to clipboard', 'success', 1500)
   }
 
   return (
@@ -180,8 +189,10 @@ export default function SettingsPage() {
           <div>
             <div className="font-medium text-white mb-1">Chess Engine</div>
             <p className="text-muted">
-              Includes <span className="text-white">Stockfish 18</span> (unmodified,{' '}
-              <a href="https://github.com/official-stockfish/Stockfish" target="_blank" rel="noopener noreferrer" className="text-gold hover:underline">source</a>),
+              Includes <span className="text-white">Stockfish 18</span> via the unmodified{' '}
+              <a href="https://github.com/nmrugg/stockfish.js" target="_blank" rel="noopener noreferrer" className="text-gold hover:underline">stockfish.js WebAssembly build</a>{' '}
+              (built from the official{' '}
+              <a href="https://github.com/official-stockfish/Stockfish" target="_blank" rel="noopener noreferrer" className="text-gold hover:underline">Stockfish engine</a>),
               licensed under the{' '}
               <a href="/stockfish/COPYING" target="_blank" rel="noopener noreferrer" className="text-gold hover:underline">GNU GPL v3</a>.
             </p>
@@ -232,6 +243,11 @@ export default function SettingsPage() {
             <p className="text-muted">
               Got a suggestion or found a bug?{' '}
               <a href="mailto:MentorChessHelp@gmail.com?subject=MentorChess%20feedback" className="text-gold hover:underline">Send feedback</a>
+              {' '}or email{' '}
+              <button onClick={copyEmail} className="text-gold hover:underline inline-flex items-center gap-1 cursor-pointer">
+                MentorChessHelp@gmail.com <Copy size={11} />
+              </button>
+              {' '}directly.
             </p>
           </div>
           <div>
@@ -239,6 +255,11 @@ export default function SettingsPage() {
             <p className="text-muted">
               Interested in advertising or partnering with MentorChess?{' '}
               <a href="mailto:MentorChessHelp@gmail.com?subject=MentorChess%20advertising%20inquiry" className="text-gold hover:underline">Get in touch</a>
+              {' '}or email{' '}
+              <button onClick={copyEmail} className="text-gold hover:underline inline-flex items-center gap-1 cursor-pointer">
+                MentorChessHelp@gmail.com <Copy size={11} />
+              </button>
+              {' '}directly.
             </p>
           </div>
           <ToggleRow
