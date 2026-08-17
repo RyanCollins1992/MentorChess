@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
-import { Flame, Trophy, Brain, Zap, TrendingUp, ChevronRight, BookOpen, Cpu, Flag, Crown } from 'lucide-react'
+import { Flame, Trophy, Brain, Zap, TrendingUp, ChevronRight, BookOpen, Cpu, Flag, Crown, Mail } from 'lucide-react'
 import { progressManager } from '../core/ProgressManager'
 import { srsEngine } from '../core/SpacedRepetitionEngine'
 import { TRAPS } from '../data/traps'
@@ -150,6 +150,13 @@ export default function DashboardPage() {
           <QuickLink icon={Flag} label="Endgames" onClick={() => navigate('endgames')} />
           <QuickLink icon={Crown} label="Mate Patterns" onClick={() => navigate('mate-patterns')} />
         </div>
+      </div>
+
+      {/* Feedback footer */}
+      <div className="flex items-center justify-center gap-1.5 text-xs text-muted pt-2">
+        <Mail size={12} />
+        <span>Have a suggestion?</span>
+        <a href="mailto:MentorChessHelp@gmail.com?subject=MentorChess%20feedback" className="text-gold hover:underline">Send feedback</a>
       </div>
     </div>
   )

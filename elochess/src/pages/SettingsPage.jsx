@@ -220,9 +220,25 @@ export default function SettingsPage() {
             </p>
           </div>
           <div>
-            <div className="font-medium text-white mb-1">Privacy</div>
+            <div className="font-medium text-white mb-1">Legal</div>
             <p className="text-muted">
               <a href="/privacy.html" target="_blank" rel="noopener noreferrer" className="text-gold hover:underline">Privacy Policy</a>
+              {' · '}
+              <a href="/terms.html" target="_blank" rel="noopener noreferrer" className="text-gold hover:underline">Terms of Use</a>
+            </p>
+          </div>
+          <div>
+            <div className="font-medium text-white mb-1">Feedback</div>
+            <p className="text-muted">
+              Got a suggestion or found a bug?{' '}
+              <a href="mailto:MentorChessHelp@gmail.com?subject=MentorChess%20feedback" className="text-gold hover:underline">Send feedback</a>
+            </p>
+          </div>
+          <div>
+            <div className="font-medium text-white mb-1">Advertising &amp; Partnerships</div>
+            <p className="text-muted">
+              Interested in advertising or partnering with MentorChess?{' '}
+              <a href="mailto:MentorChessHelp@gmail.com?subject=MentorChess%20advertising%20inquiry" className="text-gold hover:underline">Get in touch</a>
             </p>
           </div>
           <ToggleRow

@@ -81,6 +81,24 @@ describe('SettingsPage', () => {
     expect(link.closest('a')).toHaveAttribute('href', '/privacy.html')
   })
 
+  it('links to the terms of use', () => {
+    render(<SettingsPage />)
+    const link = screen.getByText('Terms of Use')
+    expect(link.closest('a')).toHaveAttribute('href', '/terms.html')
+  })
+
+  it('links feedback to a mailto address', () => {
+    render(<SettingsPage />)
+    const link = screen.getByText('Send feedback')
+    expect(link.closest('a')).toHaveAttribute('href', 'mailto:MentorChessHelp@gmail.com?subject=MentorChess%20feedback')
+  })
+
+  it('links advertising inquiries to a mailto address', () => {
+    render(<SettingsPage />)
+    const link = screen.getByText('Get in touch')
+    expect(link.closest('a')).toHaveAttribute('href', 'mailto:MentorChessHelp@gmail.com?subject=MentorChess%20advertising%20inquiry')
+  })
+
   it('the Analytics toggle is off by default (no consent decision yet)', () => {
     render(<SettingsPage />)
     const toggle = screen.getByText('Analytics').closest('div').parentElement.parentElement.querySelector('button')
