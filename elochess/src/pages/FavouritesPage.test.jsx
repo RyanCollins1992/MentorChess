@@ -2,10 +2,15 @@ import { describe, it, expect, beforeEach } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import FavouritesPage from './FavouritesPage'
 import { useAppStore } from '../store/useAppStore'
+import { useOpeningsStore } from '../store/useOpeningsStore'
 
 describe('FavouritesPage', () => {
   beforeEach(() => {
-    useAppStore.setState({ favourites: [] })
+    // currentPage defaults to 'openings' itself, so navigation tests start
+    // it somewhere else — otherwise "did navigate" can't be told apart from
+    // "was already on openings by default".
+    useAppStore.setState({ favourites: [], currentPage: 'dashboard' })
+    useOpeningsStore.setState({ selectedTrap: null, activeColor: 'white' })
   })
 
   it('shows the empty state when there are no favourites', () => {
@@ -56,10 +61,19 @@ describe('FavouritesPage', () => {
     expect(screen.getByText('Fishing Pole Trap')).toBeInTheDocument()
   })
 
-  it('clicking a trap row navigates to Openings', () => {
+  it('clicking a trap row navigates to Openings with that exact trap selected, not just the generic list', () => {
     render(<FavouritesPage />)
     fireEvent.click(screen.getByText('Fried Liver Attack'))
     expect(useAppStore.getState().currentPage).toBe('openings')
+    expect(useOpeningsStore.getState().selectedTrap?.id).toBe('fried-liver')
+    expect(useOpeningsStore.getState().activeColor).toBe('white')
+  })
+
+  it('clicking a mate trap selects it and switches the Openings tab to Mates', () => {
+    render(<FavouritesPage />)
+    fireEvent.click(screen.getByText("Scholar's Mate"))
+    expect(useOpeningsStore.getState().selectedTrap?.id).toBe('scholars-mate')
+    expect(useOpeningsStore.getState().activeColor).toBe('mates')
   })
 
   it('the White/Black color tabs filter traps by their color field', () => {

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { TRAPS } from '../data/traps'
 import { useAppStore } from '../store/useAppStore'
+import { useOpeningsStore } from '../store/useOpeningsStore'
 import { progressManager } from '../core/ProgressManager'
 import { srsEngine } from '../core/SpacedRepetitionEngine'
 
@@ -9,6 +10,17 @@ export default function FavouritesPage() {
   const toggle = useAppStore(s => s.toggleFavourite)
   const navigate = useAppStore(s => s.navigate)
   const showToast = useAppStore(s => s.showToast)
+  const setActiveColor = useOpeningsStore(s => s.setActiveColor)
+  const selectTrap = useOpeningsStore(s => s.selectTrap)
+
+  // Jumps straight into that trap's study panel on the Openings page,
+  // instead of just landing on the generic Openings list and making the
+  // user search for it again.
+  const openTrap = (trap) => {
+    setActiveColor(trap.isMate ? 'mates' : trap.color)
+    selectTrap(trap)
+    navigate('openings')
+  }
   const [search, setSearch] = useState('')
   const [color, setColor] = useState('all')
 
@@ -78,10 +90,7 @@ export default function FavouritesPage() {
                   trap={trap}
                   isFav={true}
                   onToggle={() => handleToggle(trap)}
-                  onStudy={() => {
-                    navigate('openings')
-                    showToast(`Opening ${trap.name}…`, 'info', 1200)
-                  }}
+                  onStudy={() => openTrap(trap)}
                 />
               ))}
             </div>
@@ -112,7 +121,7 @@ export default function FavouritesPage() {
                   trap={trap}
                   isFav={false}
                   onToggle={() => handleToggle(trap)}
-                  onStudy={() => navigate('openings')}
+                  onStudy={() => openTrap(trap)}
                 />
               ))}
             </div>

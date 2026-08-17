@@ -3,6 +3,7 @@ import { TRAPS } from '../data/traps'
 import { srsEngine } from '../core/SpacedRepetitionEngine'
 import { progressManager } from '../core/ProgressManager'
 import { useAppStore } from '../store/useAppStore'
+import { useOpeningsStore } from '../store/useOpeningsStore'
 
 const FILTERS = ['All', 'Unrated', 'Easy', 'Medium', 'Hard']
 
@@ -12,6 +13,17 @@ export default function RateDifficultyPage() {
   const [filter, setFilter]   = useState('All')
   const [search, setSearch]   = useState('')
   const showToast = useAppStore(s => s.showToast)
+  const navigate = useAppStore(s => s.navigate)
+  const setActiveColor = useOpeningsStore(s => s.setActiveColor)
+  const selectTrap = useOpeningsStore(s => s.selectTrap)
+
+  // Jumps straight into that trap's study panel on the Openings page,
+  // instead of leaving the click dead (only the star buttons did anything).
+  const openTrap = (trap) => {
+    setActiveColor(trap.isMate ? 'mates' : trap.color)
+    selectTrap(trap)
+    navigate('openings')
+  }
 
   const saveRating = (trapId, stars) => {
     setDifficultyRating(trapId, stars)
@@ -100,13 +112,13 @@ export default function RateDifficultyPage() {
       {/* List */}
       <div className="flex-1 overflow-y-auto px-6 py-4 space-y-6">
         {whites.length > 0 && (
-          <TrapGroup title="♔ White Traps" traps={whites} ratings={ratings} onRate={saveRating} />
+          <TrapGroup title="♔ White Traps" traps={whites} ratings={ratings} onRate={saveRating} onOpen={openTrap} />
         )}
         {blacks.length > 0 && (
-          <TrapGroup title="♚ Black Traps" traps={blacks} ratings={ratings} onRate={saveRating} />
+          <TrapGroup title="♚ Black Traps" traps={blacks} ratings={ratings} onRate={saveRating} onOpen={openTrap} />
         )}
         {mates.length > 0 && (
-          <TrapGroup title="💀 Mates" traps={mates} ratings={ratings} onRate={saveRating} />
+          <TrapGroup title="💀 Mates" traps={mates} ratings={ratings} onRate={saveRating} onOpen={openTrap} />
         )}
         {filtered.length === 0 && (
           <div className="text-center text-muted py-16">
@@ -119,20 +131,20 @@ export default function RateDifficultyPage() {
   )
 }
 
-function TrapGroup({ title, traps, ratings, onRate }) {
+function TrapGroup({ title, traps, ratings, onRate, onOpen }) {
   return (
     <div>
       <div className="text-xs font-bold text-muted uppercase tracking-widest mb-3">{title}</div>
       <div className="space-y-2">
         {traps.map(trap => (
-          <TrapRateRow key={trap.id} trap={trap} rating={ratings[trap.id] || 0} onRate={onRate} />
+          <TrapRateRow key={trap.id} trap={trap} rating={ratings[trap.id] || 0} onRate={onRate} onOpen={onOpen} />
         ))}
       </div>
     </div>
   )
 }
 
-function TrapRateRow({ trap, rating, onRate }) {
+function TrapRateRow({ trap, rating, onRate, onOpen }) {
   const [hovered, setHovered] = useState(0)
 
   const levelColors = {
@@ -145,7 +157,10 @@ function TrapRateRow({ trap, rating, onRate }) {
   const inSRS      = srsEngine.isEnrolled(trap.id)
 
   return (
-    <div className="flex items-center gap-4 px-4 py-3 bg-bg2 rounded-xl border border-border hover:border-border/80 transition-colors">
+    <div
+      onClick={() => onOpen(trap)}
+      className="flex items-center gap-4 px-4 py-3 bg-bg2 rounded-xl border border-border hover:border-border/80 transition-colors cursor-pointer"
+    >
       {/* Name */}
       <div className="flex-1 min-w-0">
         <div className="font-semibold text-white text-sm truncate">{trap.name}</div>
@@ -173,7 +188,7 @@ function TrapRateRow({ trap, rating, onRate }) {
         {[1, 2, 3].map(star => (
           <button
             key={star}
-            onClick={() => onRate(trap.id, rating === star ? 0 : star)}
+            onClick={(e) => { e.stopPropagation(); onRate(trap.id, rating === star ? 0 : star) }}
             onMouseEnter={() => setHovered(star)}
             className="text-xl transition-colors active:scale-95"
             title={star === 1 ? 'Easy' : star === 2 ? 'Medium' : 'Hard'}
