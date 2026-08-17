@@ -27,4 +27,21 @@ describe('matePatterns data', () => {
       expect(chess.isCheckmate()).toBe(true)
     }
   )
+
+  // Regression for 4 real bugs found 2026-08-17 (Arabian, Epaulette,
+  // Damiano's, Vukovic): the mating piece sat on the same open file/rank as
+  // the king with nothing between them, so the king was already under
+  // attack before the labeled "solution" move — the puzzle secretly started
+  // one move too late. Checked by flipping whose turn it is (piece
+  // placement unchanged) and asking whether the flipped-to-move side is in
+  // check — that reveals an existing attack on the king regardless of whose
+  // turn the FEN claims it is.
+  it.each(PATTERNS.filter(p => p.solution.length > 0))(
+    '$name is not already check before the solution move is played',
+    (pattern) => {
+      const [board, turn, ...rest] = pattern.fen.split(' ')
+      const flipped = [board, turn === 'w' ? 'b' : 'w', ...rest].join(' ')
+      expect(new Chess(flipped).inCheck()).toBe(false)
+    }
+  )
 })

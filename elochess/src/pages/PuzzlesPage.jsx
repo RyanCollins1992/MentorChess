@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect } from 'react'
+import { Chess } from 'chess.js'
 import { Chessboard } from '../components/ui/Chessboard'
 import { useChessBoard } from '../hooks/useChessBoard'
 import { progressManager } from '../core/ProgressManager'
@@ -66,23 +67,25 @@ export default function PuzzlesPage() {
   }
 
   const handleSolved = (id) => {
-    const next = [...new Set([...solved, id])]
     markPuzzleSolved(id)
     const ns = streak + 1; setStreak(ns)
     progressManager.awardXP('PUZZLE_CORRECT')
     if (ns % 5 === 0) progressManager.awardXP('PUZZLE_STREAK_5')
     refreshProgress()
     showToast(ns % 5 === 0 ? `🔥 ${ns} streak! +25 XP` : '✅ Puzzle solved! +15 XP', 'success')
+  }
 
-    setTimeout(() => {
-      if (next.length >= PUZZLES.length) {
-        resetSolvedPuzzles()
-        showToast('🎉 All puzzles completed! Reshuffling...', 'success')
-        setSelectedPuzzle(pickRandomPuzzle([]))
-      } else {
-        setSelectedPuzzle(pickRandomPuzzle(next))
-      }
-    }, 1200)
+  // Advances only when the user clicks "Next Puzzle" — solving no longer
+  // auto-advances the board, which used to yank the next puzzle in before
+  // there was time to look at the solved position.
+  const handleNext = () => {
+    if (solved.length >= PUZZLES.length) {
+      resetSolvedPuzzles()
+      showToast('🎉 All puzzles completed! Reshuffling...', 'success')
+      setSelectedPuzzle(pickRandomPuzzle([]))
+    } else {
+      setSelectedPuzzle(pickRandomPuzzle(solved))
+    }
   }
 
   return (
@@ -114,7 +117,7 @@ export default function PuzzlesPage() {
       </div>
       <div className="flex-1 overflow-hidden">
         {selectedPuzzle
-          ? <PuzzleBoard key={selectedPuzzle.id} puzzle={selectedPuzzle} isSolved={solved.includes(selectedPuzzle.id)} onSolved={() => handleSolved(selectedPuzzle.id)} />
+          ? <PuzzleBoard key={selectedPuzzle.id} puzzle={selectedPuzzle} isSolved={solved.includes(selectedPuzzle.id)} onSolved={() => handleSolved(selectedPuzzle.id)} onNext={handleNext} />
           : <div className="flex items-center justify-center h-full"><div className="text-center"><div className="text-5xl mb-3 opacity-20">🧩</div><div className="font-semibold text-white">Select a puzzle</div></div></div>}
       </div>
     </div>
@@ -150,13 +153,24 @@ function ActivityHeatmap({ days }) {
   )
 }
 
-function PuzzleBoard({ puzzle, isSolved, onSolved }) {
+function PuzzleBoard({ puzzle, isSolved, onSolved, onNext }) {
   const { fen, tryMove, undo, reset: resetBoard } = useChessBoard(puzzle.fen)
   const [solved, setSolved] = useState(isSolved)
   const [failed, setFailed] = useState(false)
   const [flash, setFlash]   = useState(null)
   const [showHint, setShowHint] = useState(false)
   const showToast = useAppStore(s => s.showToast)
+
+  // Parsed from puzzle.solution[0] against a scratch Chess instance (same
+  // approach as MatePatternsPage's hint) so Show Hint can glow the source
+  // square of the piece to move, not just show the hint text.
+  const hintMove = useMemo(() => {
+    if (!puzzle.solution?.length) return null
+    try {
+      const mv = new Chess(puzzle.fen).move(puzzle.solution[0])
+      return mv ? { from: mv.from, to: mv.to } : null
+    } catch { return null }
+  }, [puzzle])
 
   const handleDrop = ({ sourceSquare: from, targetSquare: to }) => {
     if (solved) return false
@@ -178,6 +192,8 @@ function PuzzleBoard({ puzzle, isSolved, onSolved }) {
   const reset = () => {
     resetBoard(puzzle.fen)
     setFlash(null)
+    setSolved(false)
+    setFailed(false)
   }
 
   return (
@@ -185,14 +201,18 @@ function PuzzleBoard({ puzzle, isSolved, onSolved }) {
       <div className="flex-1 flex items-center justify-center p-2">
         <div className="w-full max-w-[min(calc(100vh_-_130px),90vw,1080px)]">
           <div className={`rounded-xl overflow-hidden transition-all duration-200 ${flash === 'correct' || solved ? 'ring-2 ring-accent2' : flash === 'wrong' ? 'ring-2 ring-danger' : ''}`}>
-            <Chessboard position={fen} onPieceDrop={handleDrop} arePiecesDraggable={!solved} />
+            <Chessboard position={fen} onPieceDrop={handleDrop} arePiecesDraggable={!solved}
+              customSquareStyles={showHint && !solved && hintMove ? { [hintMove.from]: { animation: 'hint-glow 1.2s ease-in-out infinite' } } : undefined} />
           </div>
         </div>
       </div>
       <div className="w-72 shrink-0 border-l border-border bg-bg2 flex flex-col p-4 gap-4 overflow-y-auto">
         <div><div className="font-bold text-white text-lg">{puzzle.title}</div><div className="text-xs text-muted">{puzzle.theme}</div></div>
         {solved
-          ? <div className="bg-accent2/15 border border-accent2/30 rounded-xl p-4 text-center"><div className="text-accent2 font-bold text-lg">✅ Solved!</div>{!failed && <div className="text-xs text-muted mt-1">First try!</div>}</div>
+          ? <div className="bg-accent2/15 border border-accent2/30 rounded-xl p-4 text-center space-y-3">
+              <div><div className="text-accent2 font-bold text-lg">✅ Solved!</div>{!failed && <div className="text-xs text-muted mt-1">First try!</div>}</div>
+              <button onClick={onNext} className="w-full btn-gold text-sm">Next Puzzle →</button>
+            </div>
           : <div className="bg-bg3 border border-border rounded-xl p-3 text-sm text-muted">🎯 Find the best move for {fen.split(' ')[1] === 'w' ? 'White' : 'Black'}</div>}
         <div className="space-y-2">
           <button onClick={() => setShowHint(!showHint)} className="w-full btn-ghost text-sm">💡 {showHint ? 'Hide' : 'Show'} Hint</button>

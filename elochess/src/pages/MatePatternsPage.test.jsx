@@ -36,11 +36,16 @@ describe('MatePatternsPage', () => {
     expect(screen.getByText('Find the checkmate move!', { exact: false })).toBeInTheDocument()
   })
 
-  it('a demo pattern (Scholar\'s Mate) requires no move and shows the explanation immediately', () => {
-    render(<MatePatternsPage />)
+  it('Scholar\'s Mate starts from the position before the final blow, not the completed mate', () => {
+    const { container } = render(<MatePatternsPage />)
     fireEvent.click(screen.getByText("Scholar's Mate"))
-    expect(screen.getByText('Study position — no moves required', { exact: false })).toBeInTheDocument()
+    expect(screen.queryByText('Study position — no moves required', { exact: false })).not.toBeInTheDocument()
+    expect(screen.getByText('Find the checkmate move!', { exact: false })).toBeInTheDocument()
+
+    click(container, 'h5')
+    click(container, 'f7')
     expect(screen.getByText('✅ Explanation')).toBeInTheDocument()
+    expect(useAppStore.getState().matePatternsLearned).toContain('scholars')
   })
 
   it('playing the correct solution move marks the pattern learned', () => {

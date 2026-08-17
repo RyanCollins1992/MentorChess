@@ -84,7 +84,7 @@ function PatternViewer({ pattern, isLearned, onLearned }) {
     return true
   }
 
-  const reset = () => { resetBoard(pattern.fen); setFlash(null); setHintStage(0) }
+  const reset = () => { resetBoard(pattern.fen); setFlash(null); setHintStage(0); setSolved(false) }
 
   return (
     <div className="flex h-full overflow-hidden">
@@ -118,7 +118,7 @@ function PatternViewer({ pattern, isLearned, onLearned }) {
           </div>
         )}
         <div className="space-y-2 mt-auto">
-          {!pattern.isDemo && !solved && <button onClick={reset} className="w-full btn-ghost text-sm">↺ Reset</button>}
+          {!pattern.isDemo && <button onClick={reset} className="w-full btn-ghost text-sm">↺ Reset</button>}
           {!isLearned && (pattern.isDemo || solved) && <button onClick={onLearned} className="w-full btn-gold text-sm">✓ Mark as Learned</button>}
           {isLearned && <div className="text-center text-sm text-accent2">✅ Learned!</div>}
         </div>

@@ -47,6 +47,21 @@ describe('PuzzlesPage', () => {
     expect(screen.getByText('💡 Hide Hint')).toBeInTheDocument()
   })
 
+  it('Show Hint glows the square of the piece to move (Rd1, the solving rook)', () => {
+    const { container } = render(<PuzzlesPage />)
+    fireEvent.click(screen.getByText('Back Rank Checkmate'))
+    fireEvent.click(screen.getByText('💡 Show Hint'))
+
+    // squareStyles (where the glow animation lives) lands on react-chessboard's
+    // inner wrapper div, not the outer [data-square] div — same pattern as
+    // Chessboard.test.jsx's check-blink/last-move-glow assertions.
+    const d1Inner = container.querySelector('[data-square="d1"]').querySelector('div')
+    expect(d1Inner.style.animation).toContain('hint-glow')
+
+    fireEvent.click(screen.getByText('💡 Hide Hint'))
+    expect(container.querySelector('[data-square="d1"]').querySelector('div').style.animation).not.toContain('hint-glow')
+  })
+
   it('playing the correct solution move marks the puzzle solved', () => {
     const { container } = render(<PuzzlesPage />)
     fireEvent.click(screen.getByText('Back Rank Checkmate'))
@@ -105,6 +120,18 @@ describe('PuzzlesPage', () => {
     click(container, 'd1')
     click(container, 'd8')
     expect(screen.getByText('✅ Solved!')).toBeInTheDocument()
+  })
+
+  it('Reset after solving lets the puzzle be played again, not left locked on the solved screen', () => {
+    const { container } = render(<PuzzlesPage />)
+    fireEvent.click(screen.getByText('Back Rank Checkmate'))
+    click(container, 'd1')
+    click(container, 'd8')
+    expect(screen.getByText('✅ Solved!')).toBeInTheDocument()
+
+    fireEvent.click(screen.getByText('↺ Reset'))
+    expect(screen.queryByText('✅ Solved!')).not.toBeInTheDocument()
+    expect(screen.getByText('Find the best move', { exact: false })).toBeInTheDocument()
   })
 
   it('selecting a puzzle persists it so a refresh reopens the same one', () => {

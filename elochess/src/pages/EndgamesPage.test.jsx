@@ -73,6 +73,27 @@ describe('EndgamesPage', () => {
     expect(movesLine(container)).toContain('Moves: 0')
   })
 
+  it('New Position cycles to a different starting setup and resets the move counter', () => {
+    const { container } = render(<EndgamesPage />)
+    fireEvent.click(screen.getByText('K+Q vs K'))
+    click(container, 'd1')
+    click(container, 'd3')
+    expect(movesLine(container)).toContain('Moves: 1')
+
+    fireEvent.click(screen.getByRole('button', { name: /New Position \(1\/3\)/ }))
+    expect(movesLine(container)).toContain('Moves: 0')
+    expect(screen.getByRole('button', { name: /New Position \(2\/3\)/ })).toBeInTheDocument()
+  })
+
+  it('New Position wraps back to the first variation label after cycling through all of them', () => {
+    render(<EndgamesPage />)
+    fireEvent.click(screen.getByText('K+Q vs K'))
+
+    const cycle = () => fireEvent.click(screen.getByRole('button', { name: /New Position/ }))
+    cycle(); cycle(); cycle()
+    expect(screen.getByRole('button', { name: /New Position \(1\/3\)/ })).toBeInTheDocument()
+  })
+
   it('switching to a different scenario remounts with a fresh move counter', () => {
     const { container } = render(<EndgamesPage />)
     fireEvent.click(screen.getByText('K+Q vs K'))
