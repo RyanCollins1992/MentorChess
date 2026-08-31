@@ -12,7 +12,6 @@ import { useLiveEval } from '../hooks/useLiveEval'
 import { useBookMove } from '../hooks/useBookMove'
 import { usePendingPromotion } from '../hooks/usePendingPromotion'
 import { useAppStore } from '../store/useAppStore'
-import { aiCoach } from '../core/AICoach'
 import { readThemeColor } from '../core/themeColor'
 import { EASE_SETTLE } from '../styles/motion'
 
@@ -97,7 +96,6 @@ function GameScreen({ playerColor, difficulty, onNewGame }) {
   const [thinking, setThinking] = useState(false)
   const [gameOver, setGameOver] = useState(false)
   const [moveList, setMoveList] = useState([])
-  const [tip, setTip]           = useState('')
   const [mode, setMode]         = useState('focus')
   const [lastMove, setLastMove] = useState(null)
   const showToast = useAppStore(s => s.showToast)
@@ -241,15 +239,6 @@ function GameScreen({ playerColor, difficulty, onNewGame }) {
     setTimeout(() => makeAiMove(), 300)
   }
 
-  const askTip = async () => {
-    setTip('Thinking…')
-    aiCoach.setContext({ elo: difficulty.elo, currentMoves: moveList.join(' ') })
-    try {
-      const reply = await aiCoach.send(`I'm playing as ${playerColor === 'w' ? 'White' : 'Black'}. FEN: ${chessRef.current.fen()}. Give me a quick tip for my next move in 2 sentences.`)
-      setTip(reply)
-    } catch { setTip('Coach unavailable right now.') }
-  }
-
   return (
     <div className="flex h-full overflow-hidden">
       <div className="flex-1 flex items-center justify-center p-2">
@@ -302,9 +291,7 @@ function GameScreen({ playerColor, difficulty, onNewGame }) {
           <div className="text-xs text-muted uppercase tracking-wide font-bold mb-2">Moves</div>
           <MoveLedger moveList={moveList} />
         </div>
-        {tip && <div className="bg-gold/10 border border-gold/30 rounded-xl p-3 text-xs text-muted leading-relaxed">💡 {tip}</div>}
         <div className="space-y-2 shrink-0">
-          {!gameOver && <button onClick={askTip} className="w-full btn-ghost text-sm">💡 Ask Coach</button>}
           <button onClick={onNewGame} className="w-full btn-gold text-sm">{gameOver ? '🔄 New Game' : '↺ Resign'}</button>
         </div>
       </div>

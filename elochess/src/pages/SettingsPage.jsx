@@ -217,14 +217,6 @@ export default function SettingsPage() {
             </p>
           </div>
           <div>
-            <div className="font-medium text-white mb-1">AI Coach</div>
-            <p className="text-muted">
-              Powered by{' '}
-              <a href="https://pollinations.ai" target="_blank" rel="noopener noreferrer" className="text-gold hover:underline">Pollinations.ai</a>'s
-              public text API (free tier). This is a third-party service and the feature may change if Pollinations updates their API access requirements.
-            </p>
-          </div>
-          <div>
             <div className="font-medium text-white mb-1">Open Source Libraries</div>
             <p className="text-muted">
               React, Vite, Tailwind CSS, chess.js, react-chessboard, Zustand, and Capacitor (all MIT licensed).

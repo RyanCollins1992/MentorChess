@@ -18,7 +18,6 @@ The dev server runs at `http://localhost:5173`. Always run npm commands from the
 | Board rendering | react-chessboard |
 | State management | Zustand (store in `src/store/`) |
 | Spaced repetition | SM-2 algorithm (custom implementation) |
-| AI coaching | Pollinations.ai (chess-only, no off-topic responses) |
 | Engine analysis | Stockfish |
 | Game import | Chess.com public API |
 | Mobile | Capacitor (`capacitor.config.json`) |
@@ -66,7 +65,7 @@ elochess/
 | `MatePatternPage.jsx` | Checkmate pattern drills |
 | `MemoryDrillPage.jsx` | Memory-based position drills |
 | `EndgamesPage.jsx` | Endgame technique practice |
-| `VsCoachPage.jsx` | Play against AI coach (Pollinations.ai) |
+| `VsCoachPage.jsx` | Play against the Stockfish engine at a chosen difficulty |
 | `FreePlayPage.jsx` | Free play board |
 | `ImportGamesPage.jsx` | Import games via Chess.com API |
 | `GameReviewPage.jsx` | Review imported games with Stockfish |
@@ -136,10 +135,6 @@ const handleMove = useCallback((from, to) => {
 - Dark theme is the default — assume dark backgrounds
 - Keep mobile-first layouts (app targets phones)
 
-### AI Coach (VsCoachPage)
-- Pollinations.ai integration — chess moves only, no off-topic chat
-- Always validate AI move responses against `chess.js` before applying
-
 ### Capacitor
 - After any build, run `npx cap sync` to update native projects
 - Do not modify `capacitor.config.json` without checking iOS/Android targets
@@ -175,4 +170,3 @@ npx cap open ios     # Open in Xcode
 - Do not use `localStorage` or `sessionStorage` directly — route persistence through Zustand
 - Do not install new major dependencies without checking Capacitor compatibility
 - Do not remove the `useRef` pattern for Chess instances (stale closure fix)
-- Do not add off-topic responses to the AI coach prompt

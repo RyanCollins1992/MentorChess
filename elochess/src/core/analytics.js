@@ -7,9 +7,8 @@
 // The Measurement ID is a public identifier (it's visible in every GA4
 // site's page source, unlike a real secret), so it's read from a plain
 // Vite build-time env var rather than anything requiring server-side
-// secrecy. Same "blocked on Ryan supplying one value" shape as
-// AICoach.js's pk_ key — everything else here works today; GA simply
-// no-ops until VITE_GA_MEASUREMENT_ID is set in .env.
+// secrecy. Everything else here works today; GA simply no-ops until
+// VITE_GA_MEASUREMENT_ID is set in .env.
 const GA_MEASUREMENT_ID = import.meta.env.VITE_GA_MEASUREMENT_ID
 const CONSENT_KEY = 'mentorchess-analytics-consent' // 'accepted' | 'rejected' | absent (undecided)
 

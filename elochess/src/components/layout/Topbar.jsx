@@ -1,5 +1,5 @@
 import { useAppStore } from '../../store/useAppStore'
-import { Menu, Search, Plus, Settings as SettingsIcon, Zap } from 'lucide-react'
+import { Menu, Search, Settings as SettingsIcon, Zap } from 'lucide-react'
 import { KNIGHTPATH_NAV_ICONS } from '../../styles/knightpathIcons'
 
 const PAGE_TITLES = {
@@ -25,7 +25,7 @@ const PAGE_TITLES = {
   'settings':       'Settings',
 }
 
-export default function Topbar({ onCoachClick, onPaletteClick }) {
+export default function Topbar({ onPaletteClick }) {
   const { currentPage, toggleSidebar, progress, navigate } = useAppStore()
   const title = PAGE_TITLES[currentPage] || 'MentorChess'
   const PageIcon = KNIGHTPATH_NAV_ICONS[currentPage]
@@ -70,15 +70,6 @@ export default function Topbar({ onCoachClick, onPaletteClick }) {
           <Search size={13} />
           <span>Search…</span>
           <kbd className="font-mono text-[10px] bg-bg border border-border rounded px-1">⌘K</kbd>
-        </button>
-
-        {/* Coach button */}
-        <button
-          onClick={onCoachClick}
-          className="flex items-center gap-1.5 bg-gold text-bg font-bold px-3 py-1.5 rounded-lg hover:bg-gold2 transition-colors text-sm active:scale-95"
-        >
-          <Plus size={14} />
-          <span>Coach</span>
         </button>
 
         {/* Settings */}
