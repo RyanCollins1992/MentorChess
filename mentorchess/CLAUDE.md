@@ -2,7 +2,7 @@
 
 ## Project Overview
 MentorChess is a chess training application targeting **Android, iOS, and Web** via Capacitor.
-The dev server runs at `http://localhost:5173`. Always run npm commands from the `elochess/` subfolder.
+The dev server runs at `http://localhost:5173`. Always run npm commands from the `mentorchess/` subfolder.
 
 > 📖 **Chess Knowledge Base:** See `chess-agent.md` in this folder for chess rules, openings, tactics, endgames, ELO ratings, and implementation references. Use it to answer any chess-related questions during development.
 
@@ -26,7 +26,7 @@ The dev server runs at `http://localhost:5173`. Always run npm commands from the
 
 ## Folder Structure
 ```
-elochess/
+mentorchess/
 ├── dist/                        # Build output
 ├── public/                      # Static assets
 ├── src/
@@ -143,8 +143,8 @@ const handleMove = useCallback((from, to) => {
 
 ## Commands
 ```bash
-# Always run from elochess/ subfolder
-cd elochess
+# Always run from mentorchess/ subfolder
+cd mentorchess
 
 npm run dev          # Start dev server (localhost:5173)
 npm run build        # Production build

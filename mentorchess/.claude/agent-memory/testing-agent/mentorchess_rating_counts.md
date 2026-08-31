@@ -1,5 +1,5 @@
 ---
-name: elochess-rating-counts
+name: mentorchess-rating-counts
 description: RateDifficultyPage toggles a trap's star rating to 0 (not delete) when un-starring, so Object.keys(ratings).length-based "rated" counters overcount — the trap shows 0 stars in the UI but still counts toward "X/Y rated".
 metadata:
   type: project

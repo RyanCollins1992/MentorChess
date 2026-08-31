@@ -1,5 +1,5 @@
 ---
-name: elochess-vscoach-stockfish
+name: mentorchess-vscoach-stockfish
 description: VsCoachPage's Stockfish worker fallback ("random AI moves") was only reachable from the readyok handler when playing as Black, causing an infinite hang if readyok never fired. Fixed 2026-06-20 with a 5s handshake timeout; fix independently re-verified same day.
 metadata:
   type: project

@@ -1,0 +1,5 @@
+- [MentorChess project overview](project_mentorchess_overview.md) — page/store/SRS engine structure; git root is one level up, user commits themselves
+- [Playwright CORS worker gotcha](playwright-cors-worker-gotcha.md) — route-blocking a cross-origin Worker URL only tests the sync catch path, not async hang/timeout path
+- [MentorChess pre-existing lint errors](mentorchess-preexisting-lint-errors.md) — ~123 ESLint errors in page components are pre-existing, not regressions; lint only touched files
+- [MentorChess vitest JSX config gap](mentorchess-vitest-jsx-config-gap.md) — vitest.config.js needed esbuild.jsx:'automatic' before any .test.jsx component test could run; fixed 2026-06-20
+- [React 19 no unmount warning](react19-no-unmount-warning.md) — setState-after-unmount is silent in React 19; test isMounted guards via an observable side effect, not throw/console.error assertions

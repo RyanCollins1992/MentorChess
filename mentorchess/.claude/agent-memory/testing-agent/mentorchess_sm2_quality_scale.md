@@ -1,5 +1,5 @@
 ---
-name: elochess-sm2-quality-scale
+name: mentorchess-sm2-quality-scale
 description: SpacedReviewPage only offers 3 rating buttons (Hard=1, Good=2, Easy=3) but SpacedRepetitionEngine._applyAlgorithm treats any quality < 2 as a full failure (resets repetitions to 0, interval to 1 day) — meaning "Hard" is scheduled identically to a total miss.
 metadata:
   type: project

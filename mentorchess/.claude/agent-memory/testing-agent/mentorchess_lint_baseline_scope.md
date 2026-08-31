@@ -1,5 +1,5 @@
 ---
-name: elochess-lint-baseline-scope
+name: mentorchess-lint-baseline-scope
 description: A prior agent's claim that "pre-existing lint errors are confined to 4 named files" did not hold up — the real pre-existing baseline spans 14+ files. Always run `npx eslint <file>` per-file to verify scope claims rather than trusting a file list.
 metadata:
   type: project
