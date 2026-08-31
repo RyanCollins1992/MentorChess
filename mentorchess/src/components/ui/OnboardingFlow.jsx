@@ -56,7 +56,7 @@ export default function OnboardingFlow() {
 
     setLooking(true)
     try {
-      const res = await fetch(`https://api.chess.com/pub/player/${name.toLowerCase()}/stats`)
+      const res = await fetch(`https://api.chess.com/pub/player/${encodeURIComponent(name.toLowerCase())}/stats`)
       if (res.ok) {
         const rating = extractRating(await res.json())
         if (rating != null) {
