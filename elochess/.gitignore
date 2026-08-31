@@ -12,6 +12,9 @@ dist
 dist-ssr
 *.local
 
+# Wrangler (Cloudflare) local cache/state
+.wrangler
+
 # Local env overrides (see .env.example) — never commit the real values
 .env
 .env.local
