@@ -122,9 +122,9 @@ export default function PieceValuesPage() {
   )
 
   return (
-    <div className="flex h-full overflow-hidden">
+    <div className="flex flex-col md:flex-row h-full overflow-y-auto md:overflow-hidden">
       {/* Left — piece selector */}
-      <div className="w-48 shrink-0 border-r border-border bg-bg2 flex flex-col">
+      <div className="w-full md:w-48 md:shrink-0 max-h-[45vh] md:max-h-none border-b md:border-b-0 md:border-r border-border bg-bg2 flex flex-col">
         <div className="p-4 border-b border-border">
           <div className="font-bold text-white text-sm">Piece Values</div>
           <div className="text-xs text-muted mt-0.5">Tap to learn</div>

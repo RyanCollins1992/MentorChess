@@ -117,7 +117,7 @@ function DrillCard({ trap, index, total, onResult }) {
   }
 
   return (
-    <div className="flex h-full overflow-hidden">
+    <div className="flex flex-col md:flex-row h-full overflow-y-auto md:overflow-hidden">
       <div className="flex-1 flex items-center justify-center p-2">
         <div className="w-full max-w-[min(calc(100vh_-_190px),86vw,960px)]">
           <div className="flex items-center justify-between mb-1">
@@ -141,7 +141,7 @@ function DrillCard({ trap, index, total, onResult }) {
           </div>
         </div>
       </div>
-      <div className="w-56 shrink-0 border-l border-border bg-bg2 p-4 flex flex-col gap-4">
+      <div className="w-full md:w-56 md:shrink-0 border-t md:border-t-0 md:border-l border-border bg-bg2 p-4 flex flex-col gap-4">
         <div className="text-5xl leading-none text-gold font-heading select-none" style={{ opacity: 0.25 }}>{trap.color === 'black' ? '♞' : '♘'}</div>
         <div><div className="font-bold text-white">{trap.name}</div><div className="text-xs text-muted mt-0.5">{trap.opening}</div></div>
         <div className="text-sm text-muted">Play all {trap.moves.length} moves from memory</div>

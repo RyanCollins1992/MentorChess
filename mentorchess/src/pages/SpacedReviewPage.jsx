@@ -116,7 +116,7 @@ function DrillCard({ trap, onComplete }) {
   }
 
   return (
-    <div className="flex flex-1 overflow-hidden">
+    <div className="flex flex-col md:flex-row flex-1 overflow-y-auto md:overflow-hidden">
       <div className="flex-1 flex items-center justify-center p-2">
         <div className="w-full max-w-[min(calc(100vh_-_130px),90vw,1080px)]">
           <div className={`rounded-xl overflow-hidden transition-all duration-200 ${flash==='correct'?'ring-2 ring-accent2':flash==='wrong'?'ring-2 ring-danger':''}`}>
@@ -132,7 +132,7 @@ function DrillCard({ trap, onComplete }) {
           </div>
         </div>
       </div>
-      <div className="w-64 shrink-0 border-l border-border bg-bg2 p-4 flex flex-col gap-3">
+      <div className="w-full md:w-64 md:shrink-0 border-t md:border-t-0 md:border-l border-border bg-bg2 p-4 flex flex-col gap-3">
         <div><div className="font-bold text-white">{trap.name}</div><div className="text-xs text-muted mt-0.5">{trap.opening}</div></div>
         <div className="text-xs text-muted uppercase tracking-wide font-bold">🎯 Play the moves from memory</div>
         <div className="text-sm text-muted">{trap.description}</div>

@@ -69,8 +69,8 @@ export default function OpeningsPage() {
   }
 
   return (
-    <div className="flex h-full overflow-hidden">
-      <div className="w-72 shrink-0 border-r border-border flex flex-col bg-bg2 overflow-hidden">
+    <div className="flex flex-col md:flex-row h-full overflow-y-auto md:overflow-hidden">
+      <div className="w-full md:w-72 md:shrink-0 max-h-[45vh] md:max-h-none border-b md:border-b-0 md:border-r border-border flex flex-col bg-bg2 overflow-hidden">
         <div className="p-3 border-b border-border space-y-2 shrink-0">
           <div className="flex gap-1">
             {[{ id: 'white', label: 'White' }, { id: 'black', label: 'Black' }, { id: 'mates', label: 'Mates' }].map(tab => (
@@ -413,7 +413,7 @@ function TrapStudy({ trap, showToast }) {
   }
 
   return (
-    <div className="flex h-full overflow-hidden">
+    <div className="flex flex-col md:flex-row h-full overflow-y-auto md:overflow-hidden">
       {/* Board area */}
       <div className="flex flex-col items-center justify-center p-2 flex-1">
         <div className="w-full max-w-[min(calc(100vh_-_260px),86vw,940px)]">
@@ -486,7 +486,7 @@ function TrapStudy({ trap, showToast }) {
       </div>
 
       {/* Right panel */}
-      <div className="w-72 shrink-0 border-l border-border bg-bg2 flex flex-col overflow-y-auto">
+      <div className="w-full md:w-72 md:shrink-0 border-t md:border-t-0 md:border-l border-border bg-bg2 flex flex-col overflow-y-auto">
         <div className="p-4 border-b border-border">
           <h2 className="font-extrabold text-white text-lg font-heading">{trap.name}</h2>
           <div className="text-muted text-sm mt-0.5">{trap.opening}</div>
@@ -682,7 +682,7 @@ function RepertoireStudy({ line, group, showToast }) {
   const practiceMoveNum = expectedMoveIndex // ply count already played correctly, for the ledger
 
   return (
-    <div className="flex h-full overflow-hidden">
+    <div className="flex flex-col md:flex-row h-full overflow-y-auto md:overflow-hidden">
       <div className="flex flex-col items-center justify-center p-2 flex-1">
         <div className="w-full max-w-[min(calc(100vh_-_260px),86vw,940px)]">
           {mode === 'browse' && (
@@ -808,7 +808,7 @@ function RepertoireStudy({ line, group, showToast }) {
         </div>
       </div>
 
-      <div className="w-72 shrink-0 border-l border-border bg-bg2 flex flex-col overflow-y-auto">
+      <div className="w-full md:w-72 md:shrink-0 border-t md:border-t-0 md:border-l border-border bg-bg2 flex flex-col overflow-y-auto">
         <div className="p-4 border-b border-border">
           <div className="flex items-start justify-between gap-2">
             <h2 className="font-extrabold text-white text-lg leading-tight font-heading">{line.name}</h2>

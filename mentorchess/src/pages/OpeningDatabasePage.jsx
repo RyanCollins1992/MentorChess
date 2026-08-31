@@ -27,8 +27,8 @@ export default function OpeningDatabasePage() {
   const results = filtered.slice(0, MAX_RESULTS)
 
   return (
-    <div className="flex h-full overflow-hidden">
-      <div className="w-72 shrink-0 border-r border-border bg-bg2 flex flex-col overflow-hidden">
+    <div className="flex flex-col md:flex-row h-full overflow-y-auto md:overflow-hidden">
+      <div className="w-full md:w-72 md:shrink-0 max-h-[45vh] md:max-h-none border-b md:border-b-0 md:border-r border-border bg-bg2 flex flex-col overflow-hidden">
         <div className="p-3 border-b border-border space-y-2 shrink-0">
           <h2 className="font-bold text-white font-heading">Opening Database</h2>
           <input
@@ -114,7 +114,7 @@ function EntryBrowser({ entry }) {
   const [browseIdx, setBrowseIdx] = useState(0)
 
   return (
-    <div className="flex h-full overflow-hidden">
+    <div className="flex flex-col md:flex-row h-full overflow-y-auto md:overflow-hidden">
       <div className="flex flex-col items-center justify-center p-2 flex-1">
         <div className="w-full max-w-[min(calc(100vh_-_230px),86vw,940px)]">
           <div className="flex items-center justify-between mb-3">
@@ -171,7 +171,7 @@ function EntryBrowser({ entry }) {
         </div>
       </div>
 
-      <div className="w-72 shrink-0 border-l border-border bg-bg2 flex flex-col overflow-y-auto">
+      <div className="w-full md:w-72 md:shrink-0 border-t md:border-t-0 md:border-l border-border bg-bg2 flex flex-col overflow-y-auto">
         <div className="p-4 border-b border-border">
           <h2 className="font-extrabold text-white text-lg leading-tight font-heading">{entry.name}</h2>
           <div className="text-muted text-sm mt-0.5">{entry.category}</div>

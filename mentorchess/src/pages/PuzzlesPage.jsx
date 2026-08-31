@@ -89,8 +89,8 @@ export default function PuzzlesPage() {
   }
 
   return (
-    <div className="flex h-full overflow-hidden">
-      <div className="w-64 shrink-0 border-r border-border bg-bg2 flex flex-col">
+    <div className="flex flex-col md:flex-row h-full overflow-y-auto md:overflow-hidden">
+      <div className="w-full md:w-64 md:shrink-0 max-h-[45vh] md:max-h-none border-b md:border-b-0 md:border-r border-border bg-bg2 flex flex-col">
         <div className="p-3 border-b border-border space-y-2 shrink-0">
           <select value={theme} onChange={e => setTheme(e.target.value)} className="w-full bg-bg3 border border-border rounded-lg px-2 py-1.5 text-sm text-white outline-none">
             {THEMES.map(t => <option key={t} value={t}>{t === 'All' ? 'All Themes' : t}</option>)}
@@ -197,7 +197,7 @@ function PuzzleBoard({ puzzle, isSolved, onSolved, onNext }) {
   }
 
   return (
-    <div className="flex h-full overflow-hidden">
+    <div className="flex flex-col md:flex-row h-full overflow-y-auto md:overflow-hidden">
       <div className="flex-1 flex items-center justify-center p-2">
         <div className="w-full max-w-[min(calc(100vh_-_130px),90vw,1080px)]">
           <div className={`rounded-xl overflow-hidden transition-all duration-200 ${flash === 'correct' || solved ? 'ring-2 ring-accent2' : flash === 'wrong' ? 'ring-2 ring-danger' : ''}`}>
@@ -206,7 +206,7 @@ function PuzzleBoard({ puzzle, isSolved, onSolved, onNext }) {
           </div>
         </div>
       </div>
-      <div className="w-72 shrink-0 border-l border-border bg-bg2 flex flex-col p-4 gap-4 overflow-y-auto">
+      <div className="w-full md:w-72 md:shrink-0 border-t md:border-t-0 md:border-l border-border bg-bg2 flex flex-col p-4 gap-4 overflow-y-auto">
         <div><div className="font-bold text-white text-lg">{puzzle.title}</div><div className="text-xs text-muted">{puzzle.theme}</div></div>
         {solved
           ? <div className="bg-accent2/15 border border-accent2/30 rounded-xl p-4 text-center space-y-3">

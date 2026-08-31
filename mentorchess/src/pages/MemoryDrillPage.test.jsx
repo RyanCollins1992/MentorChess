@@ -15,7 +15,7 @@ const click = (container, id) => fireEvent.click(container.querySelector(`[data-
 // even-indexed plies are ever user-drilled — Black's replies auto-play via
 // the component's own 500ms setTimeout, same as OpeningsPage's TrapStudy.
 function solveDrillCard(container) {
-  const nameEl = container.querySelector('.w-56 .font-bold.text-white')
+  const nameEl = container.querySelector('.bg-bg2 .font-bold.text-white')
   const trap = TRAPS.find(t => t.name === nameEl.textContent)
   const chess = new Chess(trap.fen)
   const plies = trap.moves.map(san => {

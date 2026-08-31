@@ -90,7 +90,7 @@ export default function OpeningQuizPage() {
   const q = quiz[index]
 
   return (
-    <div className="flex h-full overflow-hidden">
+    <div className="flex flex-col md:flex-row h-full overflow-y-auto md:overflow-hidden">
       {/* Board */}
       <div className="flex-1 flex items-center justify-center p-2">
         <div className="w-full max-w-[min(calc(100vh_-_170px),86vw,960px)]">
@@ -121,7 +121,7 @@ export default function OpeningQuizPage() {
       </div>
 
       {/* Right — question + options */}
-      <div className="w-72 shrink-0 border-l border-border bg-bg2 flex flex-col p-4 gap-4">
+      <div className="w-full md:w-72 md:shrink-0 border-t md:border-t-0 md:border-l border-border bg-bg2 flex flex-col p-4 gap-4">
         <div>
           <div className="text-xs text-muted uppercase tracking-wide font-bold mb-1">Question {index + 1}</div>
           <div className="font-bold text-white text-base">What opening/trap is this?</div>

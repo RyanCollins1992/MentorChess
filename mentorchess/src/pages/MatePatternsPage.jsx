@@ -16,8 +16,8 @@ export default function MatePatternsPage() {
   const filtered = PATTERNS.filter(p => category === 'All' || p.category === category)
 
   return (
-    <div className="flex h-full overflow-hidden">
-      <div className="w-64 shrink-0 border-r border-border bg-bg2 flex flex-col">
+    <div className="flex flex-col md:flex-row h-full overflow-y-auto md:overflow-hidden">
+      <div className="w-full md:w-64 md:shrink-0 max-h-[45vh] md:max-h-none border-b md:border-b-0 md:border-r border-border bg-bg2 flex flex-col">
         <div className="p-3 border-b border-border shrink-0">
           <h2 className="font-bold text-white mb-2 font-heading">Mate Patterns</h2>
           <div className="flex flex-wrap gap-1">
@@ -87,7 +87,7 @@ function PatternViewer({ pattern, isLearned, onLearned }) {
   const reset = () => { resetBoard(pattern.fen); setFlash(null); setHintStage(0); setSolved(false) }
 
   return (
-    <div className="flex h-full overflow-hidden">
+    <div className="flex flex-col md:flex-row h-full overflow-y-auto md:overflow-hidden">
       <div className="flex-1 flex items-center justify-center p-2">
         <div className="w-full max-w-[min(calc(100vh_-_130px),90vw,1080px)]">
           <div className={`rounded-xl overflow-hidden transition-all duration-200 ${flash === 'correct' || solved ? 'ring-2 ring-accent2' : flash === 'wrong' ? 'ring-2 ring-danger' : ''}`}>
@@ -98,7 +98,7 @@ function PatternViewer({ pattern, isLearned, onLearned }) {
           {pattern.isDemo && <div className="mt-2 text-center text-xs text-muted">📖 Study position — no moves required</div>}
         </div>
       </div>
-      <div className="w-72 shrink-0 border-l border-border bg-bg2 flex flex-col p-4 gap-4 overflow-y-auto">
+      <div className="w-full md:w-72 md:shrink-0 border-t md:border-t-0 md:border-l border-border bg-bg2 flex flex-col p-4 gap-4 overflow-y-auto">
         <div><div className="text-2xl mb-1">{pattern.icon}</div><div className="font-bold text-white text-lg">{pattern.name}</div><div className="text-xs text-muted">{pattern.category} pattern</div></div>
         <div className="bg-bg3 border border-border rounded-xl p-3 text-sm text-muted leading-relaxed">{pattern.desc}</div>
         {solved || pattern.isDemo

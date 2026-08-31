@@ -37,12 +37,12 @@ describe('OpeningQuizPage', () => {
     render(<OpeningQuizPage />)
     fireEvent.click(screen.getByText('Start Quiz'))
 
-    const firstOption = document.querySelector('.w-72 button')
+    const firstOption = document.querySelector('.space-y-2.flex-1 button')
     fireEvent.click(firstOption)
 
     expect(screen.getByText('Next →')).not.toBeDisabled()
     // Exactly one option should be marked correct (accent2) after reveal.
-    const correctOptions = document.querySelectorAll('.w-72 button.border-accent2')
+    const correctOptions = document.querySelectorAll('.space-y-2.flex-1 button.border-accent2')
     expect(correctOptions.length).toBe(1)
   })
 

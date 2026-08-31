@@ -240,7 +240,7 @@ function GameScreen({ playerColor, difficulty, onNewGame }) {
   }
 
   return (
-    <div className="flex h-full overflow-hidden">
+    <div className="flex flex-col md:flex-row h-full overflow-y-auto md:overflow-hidden">
       <div className="flex-1 flex items-center justify-center p-2">
         <div className="w-full transition-[max-width] duration-300" style={{ maxWidth: mode === 'focus' ? 'min(calc(100vh - 190px),84vw,1080px)' : 'min(calc(100vh - 190px),72vw,900px)', transitionTimingFunction: `cubic-bezier(${EASE_SETTLE.join(',')})` }}>
           <div className="flex items-center gap-2 mb-2">
@@ -273,8 +273,8 @@ function GameScreen({ playerColor, difficulty, onNewGame }) {
       </div>
 
       <div
-        className="shrink-0 border-l border-border bg-bg2 flex flex-col p-4 gap-3 overflow-hidden transition-[width] duration-300"
-        style={{ width: mode === 'analysis' ? 384 : 256, transitionTimingFunction: `cubic-bezier(${EASE_SETTLE.join(',')})` }}
+        className={`w-full ${mode === 'analysis' ? 'md:w-96' : 'md:w-64'} md:shrink-0 border-t md:border-t-0 md:border-l border-border bg-bg2 flex flex-col p-4 gap-3 overflow-hidden transition-[width] duration-300`}
+        style={{ transitionTimingFunction: `cubic-bezier(${EASE_SETTLE.join(',')})` }}
       >
         <ModeToggle mode={mode} onChange={setMode} />
         <GameStatusBadge

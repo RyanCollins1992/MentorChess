@@ -213,7 +213,7 @@ export default function GameReviewPage() {
   if (!game) return <ImportPanel onGameLoaded={g => setGame(g)} />
 
   return (
-    <div className="flex h-full overflow-hidden">
+    <div className="flex flex-col md:flex-row h-full overflow-y-auto md:overflow-hidden">
       {/* Board */}
       <div className="flex-1 flex flex-col items-center justify-center p-2 gap-2">
         {/* Eval bar */}
@@ -248,7 +248,7 @@ export default function GameReviewPage() {
       </div>
 
       {/* Right panel */}
-      <div className="w-72 shrink-0 border-l border-border bg-bg2 flex flex-col overflow-hidden">
+      <div className="w-full md:w-72 md:shrink-0 border-t md:border-t-0 md:border-l border-border bg-bg2 flex flex-col overflow-hidden">
         {/* Game info */}
         <div className="p-4 border-b border-border shrink-0">
           <div className="flex items-start justify-between gap-2">
