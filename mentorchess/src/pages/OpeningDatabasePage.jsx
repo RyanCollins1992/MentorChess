@@ -28,7 +28,7 @@ export default function OpeningDatabasePage() {
 
   return (
     <div className="flex flex-col md:flex-row h-full overflow-y-auto md:overflow-hidden">
-      <div className="w-full md:w-72 md:shrink-0 max-h-[45vh] md:max-h-none border-b md:border-b-0 md:border-r border-border bg-bg2 flex flex-col overflow-hidden">
+      <div className={`${selected ? 'hidden' : 'flex'} md:flex flex-col w-full md:w-72 md:shrink-0 border-b md:border-b-0 md:border-r border-border bg-bg2 overflow-hidden`}>
         <div className="p-3 border-b border-border space-y-2 shrink-0">
           <h2 className="font-bold text-white font-heading">Opening Database</h2>
           <input
@@ -83,8 +83,15 @@ export default function OpeningDatabasePage() {
         </div>
       </div>
 
-      <div className="flex-1 min-w-0 overflow-hidden">
-        {selected ? <EntryBrowser key={`${selected.name}-${selected.moves.join(',')}`} entry={selected} /> : <EmptyState />}
+      <div className={`${selected ? 'flex' : 'hidden'} md:flex flex-col flex-1 min-w-0 overflow-hidden`}>
+        {selected && (
+          <button onClick={() => setSelected(null)} className="md:hidden shrink-0 flex items-center gap-1 px-4 py-2.5 text-sm font-medium text-muted hover:text-white border-b border-border bg-bg2">
+            ← Back to list
+          </button>
+        )}
+        <div className="flex-1 min-w-0 overflow-hidden">
+          {selected ? <EntryBrowser key={`${selected.name}-${selected.moves.join(',')}`} entry={selected} /> : <EmptyState />}
+        </div>
       </div>
     </div>
   )

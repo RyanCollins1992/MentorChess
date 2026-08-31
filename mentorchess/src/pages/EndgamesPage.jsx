@@ -27,7 +27,7 @@ export default function EndgamesPage() {
   const [selected, setSelected] = useState(null)
   return (
     <div className="flex flex-col md:flex-row h-full overflow-y-auto md:overflow-hidden">
-      <div className="w-full md:w-64 md:shrink-0 max-h-[45vh] md:max-h-none border-b md:border-b-0 md:border-r border-border bg-bg2 flex flex-col overflow-y-auto">
+      <div className={`${selected ? 'hidden' : 'flex'} md:flex flex-col w-full md:w-64 md:shrink-0 border-b md:border-b-0 md:border-r border-border bg-bg2 overflow-y-auto`}>
         <div className="p-4 border-b border-border shrink-0"><h2 className="font-bold text-white font-heading">Endgame Trainer</h2><p className="text-xs text-muted mt-1">Master the essential endings</p></div>
         {SCENARIOS.map(s => (
           <button key={s.id} onClick={() => setSelected(s)} className={`w-full text-left px-4 py-3 border-b border-border/50 hover:bg-bg3 transition-colors ${selected?.id === s.id ? 'bg-gold/10 border-l-2 border-gold pl-3' : ''}`}>
@@ -41,9 +41,16 @@ export default function EndgamesPage() {
           </button>
         ))}
       </div>
-      <div className="flex-1 overflow-hidden">
-        {selected ? <EndgameBoard key={selected.id} scenario={selected} /> :
-          <div className="flex items-center justify-center h-full"><div className="text-center"><div className="text-5xl mb-3 opacity-20">♔</div><div className="font-semibold text-white">Select an endgame</div></div></div>}
+      <div className={`${selected ? 'flex' : 'hidden'} md:flex flex-col flex-1 overflow-hidden`}>
+        {selected && (
+          <button onClick={() => setSelected(null)} className="md:hidden shrink-0 flex items-center gap-1 px-4 py-2.5 text-sm font-medium text-muted hover:text-white border-b border-border bg-bg2">
+            ← Back to list
+          </button>
+        )}
+        <div className="flex-1 overflow-hidden">
+          {selected ? <EndgameBoard key={selected.id} scenario={selected} /> :
+            <div className="flex items-center justify-center h-full"><div className="text-center"><div className="text-5xl mb-3 opacity-20">♔</div><div className="font-semibold text-white">Select an endgame</div></div></div>}
+        </div>
       </div>
     </div>
   )

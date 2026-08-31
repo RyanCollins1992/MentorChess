@@ -17,7 +17,7 @@ export default function MatePatternsPage() {
 
   return (
     <div className="flex flex-col md:flex-row h-full overflow-y-auto md:overflow-hidden">
-      <div className="w-full md:w-64 md:shrink-0 max-h-[45vh] md:max-h-none border-b md:border-b-0 md:border-r border-border bg-bg2 flex flex-col">
+      <div className={`${selected ? 'hidden' : 'flex'} md:flex flex-col w-full md:w-64 md:shrink-0 border-b md:border-b-0 md:border-r border-border bg-bg2`}>
         <div className="p-3 border-b border-border shrink-0">
           <h2 className="font-bold text-white mb-2 font-heading">Mate Patterns</h2>
           <div className="flex flex-wrap gap-1">
@@ -39,10 +39,17 @@ export default function MatePatternsPage() {
           ))}
         </div>
       </div>
-      <div className="flex-1 overflow-hidden">
-        {selected
-          ? <PatternViewer key={selected.id} pattern={selected} isLearned={learned.includes(selected.id)} onLearned={() => markLearned(selected.id)} />
-          : <div className="flex items-center justify-center h-full"><div className="text-center"><div className="text-5xl mb-3 opacity-20">👑</div><div className="font-semibold text-white">Select a pattern</div></div></div>}
+      <div className={`${selected ? 'flex' : 'hidden'} md:flex flex-col flex-1 overflow-hidden`}>
+        {selected && (
+          <button onClick={() => setSelected(null)} className="md:hidden shrink-0 flex items-center gap-1 px-4 py-2.5 text-sm font-medium text-muted hover:text-white border-b border-border bg-bg2">
+            ← Back to list
+          </button>
+        )}
+        <div className="flex-1 overflow-hidden">
+          {selected
+            ? <PatternViewer key={selected.id} pattern={selected} isLearned={learned.includes(selected.id)} onLearned={() => markLearned(selected.id)} />
+            : <div className="flex items-center justify-center h-full"><div className="text-center"><div className="text-5xl mb-3 opacity-20">👑</div><div className="font-semibold text-white">Select a pattern</div></div></div>}
+        </div>
       </div>
     </div>
   )

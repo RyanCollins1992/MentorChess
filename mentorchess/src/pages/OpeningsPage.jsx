@@ -70,7 +70,7 @@ export default function OpeningsPage() {
 
   return (
     <div className="flex flex-col md:flex-row h-full overflow-y-auto md:overflow-hidden">
-      <div className="w-full md:w-72 md:shrink-0 max-h-[45vh] md:max-h-none border-b md:border-b-0 md:border-r border-border flex flex-col bg-bg2 overflow-hidden">
+      <div className={`${selectedTrap || selectedLine ? 'hidden' : 'flex'} md:flex flex-col w-full md:w-72 md:shrink-0 border-b md:border-b-0 md:border-r border-border bg-bg2 overflow-hidden`}>
         <div className="p-3 border-b border-border space-y-2 shrink-0">
           <div className="flex gap-1">
             {[{ id: 'white', label: 'White' }, { id: 'black', label: 'Black' }, { id: 'mates', label: 'Mates' }].map(tab => (
@@ -181,12 +181,19 @@ export default function OpeningsPage() {
           )}
         </div>
       </div>
-      <div className="flex-1 min-w-0 overflow-hidden">
-        {selectedTrap
-          ? <TrapStudy key={selectedTrap.id} trap={selectedTrap} showToast={showToast} />
-          : selectedLine
-            ? <RepertoireStudy key={selectedLine.name} line={selectedLine} group={selectedRepertoire} showToast={showToast} />
-            : <TrapEmpty />}
+      <div className={`${selectedTrap || selectedLine ? 'flex' : 'hidden'} md:flex flex-col flex-1 min-w-0 overflow-hidden`}>
+        {(selectedTrap || selectedLine) && (
+          <button onClick={() => { selectTrap(null); setSelectedLine(null) }} className="md:hidden shrink-0 flex items-center gap-1 px-4 py-2.5 text-sm font-medium text-muted hover:text-white border-b border-border bg-bg2">
+            ← Back to list
+          </button>
+        )}
+        <div className="flex-1 min-w-0 overflow-hidden">
+          {selectedTrap
+            ? <TrapStudy key={selectedTrap.id} trap={selectedTrap} showToast={showToast} />
+            : selectedLine
+              ? <RepertoireStudy key={selectedLine.name} line={selectedLine} group={selectedRepertoire} showToast={showToast} />
+              : <TrapEmpty />}
+        </div>
       </div>
     </div>
   )
