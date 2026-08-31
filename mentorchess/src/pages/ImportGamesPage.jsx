@@ -112,7 +112,7 @@ export default function ImportGamesPage() {
               value={username}
               onChange={e => setUsername(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && fetchGames()}
-              placeholder="e.g. hikaru"
+              placeholder="e.g. yourusername"
               className="w-full bg-bg3 border border-border rounded-lg px-3 py-2 text-sm text-white placeholder-muted outline-none focus:border-gold/50"
             />
           </div>
