@@ -41,17 +41,23 @@ export default function Sidebar() {
           className={`flex items-center gap-2 py-4 shrink-0 ${collapsed ? 'px-3.5 justify-center' : 'px-4'}`}
           style={{ borderBottom: '1px solid var(--color-sidebar-border)' }}
         >
-          <img src="/mentorchess-icon.png" alt="MentorChess" className="w-7 h-7 rounded object-cover shrink-0" />
-          {!collapsed && (
-            <div className="flex-1 min-w-0">
-              <div className="font-heading font-bold text-base leading-none tracking-wide truncate" style={{ color: 'var(--color-sidebar-text)' }}>
-                MentorChess
+          <button
+            onClick={() => navigate('dashboard')}
+            className="flex items-center gap-2 min-w-0 flex-1 text-left hover:opacity-80 transition-opacity"
+            aria-label="Go to Dashboard"
+          >
+            <img src="/mentorchess-icon.png" alt="MentorChess" className="w-7 h-7 rounded object-cover shrink-0" />
+            {!collapsed && (
+              <div className="flex-1 min-w-0">
+                <div className="font-heading font-bold text-base leading-none tracking-wide truncate" style={{ color: 'var(--color-sidebar-text)' }}>
+                  MentorChess
+                </div>
+                <div className="text-xs mt-0.5" style={{ color: 'var(--color-sidebar-muted)' }}>
+                  {progress.totalDrills} drills · {dueCount} due
+                </div>
               </div>
-              <div className="text-xs mt-0.5" style={{ color: 'var(--color-sidebar-muted)' }}>
-                {progress.totalDrills} drills · {dueCount} due
-              </div>
-            </div>
-          )}
+            )}
+          </button>
           {/* Collapse toggle — desktop only, mirrors the mobile drawer's own
               open/close affordance rather than competing with it. */}
           <button
