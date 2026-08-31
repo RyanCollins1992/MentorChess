@@ -59,7 +59,7 @@ export default function ImportGamesPage() {
     setLoading(true); setError(''); setGames([])
     try {
       const mm = String(month).padStart(2, '0')
-      const url = `https://api.chess.com/pub/player/${username.trim().toLowerCase()}/games/${year}/${mm}`
+      const url = `https://api.chess.com/pub/player/${encodeURIComponent(username.trim().toLowerCase())}/games/${year}/${mm}`
       const res = await fetch(url)
       if (res.status === 404) throw new Error(`Player "${username}" not found on Chess.com`)
       if (!res.ok) throw new Error(`Chess.com API error (${res.status})`)

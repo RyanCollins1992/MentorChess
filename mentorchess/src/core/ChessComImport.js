@@ -93,7 +93,7 @@ export function formatTimeControl(tc) {
 
 // List of monthly archive URLs for a player, oldest first (Chess.com's own order).
 export async function fetchArchives(username) {
-  const res = await fetch(`https://api.chess.com/pub/player/${username}/games/archives`)
+  const res = await fetch(`https://api.chess.com/pub/player/${encodeURIComponent(username)}/games/archives`)
   if (res.status === 404) throw new Error(`Player "${username}" not found on Chess.com`)
   if (!res.ok) throw new Error(`Chess.com API error (${res.status})`)
   const data = await res.json()
